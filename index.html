@@ -3721,7 +3721,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
               <div class="tabs" style="max-width: 500px">
                 <button
                   class="tab active"
-                  onclick="switchTab('cad', 'empresa', this)"
+                  onclick="switchTab('cad', 'empresa', this); carregarEmpresas()"
                 >
                   🏢 Empresa
                 </button>
@@ -3742,24 +3742,41 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
               <!-- EMPRESA -->
               <div id="cad-empresa">
 
-                <!-- Painel de confirmação (aparece após salvar) -->
+                <!-- Lista de empresas -->
+                <div id="emp-lista-wrapper">
+                  <div class="flex-between mb-16">
+                    <div></div>
+                    <button class="btn-primary" style="width:auto;padding:10px 20px;" onclick="novaEmpresaForm()">
+                      + Nova Empresa
+                    </button>
+                  </div>
+                  <div id="emp-lista">
+                    <p style="color:var(--cinza-texto);padding:20px 0;text-align:center;">Carregando...</p>
+                  </div>
+                </div>
+
+                <!-- Painel de confirmação (aparece ao selecionar/salvar) -->
                 <div id="emp-confirmacao" style="display:none;">
                   <div class="card">
                     <div class="card-header" style="margin-bottom:16px;">
                       <div>
                         <h3>Dados da Empresa</h3>
-                        <p style="color:var(--verde-principal);font-weight:600;margin-top:4px;">✅ Cadastro salvo com sucesso</p>
+                        <p style="color:var(--verde-principal);font-weight:600;margin-top:4px;">✅ Cadastro salvo</p>
                       </div>
-                      <button class="btn-outline" style="padding:8px 16px;font-size:13px;" onclick="editarEmpresa()">✏️ Editar dados</button>
+                      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="btn-outline" style="padding:8px 14px;font-size:13px;" onclick="voltarListaEmpresas()">← Empresas</button>
+                        <button class="btn-outline" style="padding:8px 14px;font-size:13px;" onclick="editarEmpresa()">✏️ Editar</button>
+                      </div>
                     </div>
                     <div id="emp-resumo" style="display:flex;flex-direction:column;gap:10px;"></div>
                   </div>
                 </div>
 
                 <!-- Formulário de empresa -->
-                <div id="emp-form" class="card">
+                <div id="emp-form" class="card" style="display:none;">
                   <div class="card-header">
                     <div><h3>Dados da Empresa</h3></div>
+                    <button class="btn-outline" style="padding:8px 14px;font-size:13px;" onclick="voltarListaEmpresas()">← Empresas</button>
                   </div>
                   <div class="form-section-title">Informações Gerais</div>
                   <div class="form-row cols-2" style="margin-bottom: 14px">
@@ -4585,6 +4602,58 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         el.value = v;
       }
 
+      async function carregarEmpresas() {
+        document.getElementById("emp-lista-wrapper").style.display = "block";
+        document.getElementById("emp-confirmacao").style.display = "none";
+        document.getElementById("emp-form").style.display = "none";
+        const lista = document.getElementById("emp-lista");
+        lista.innerHTML = '<p style="color:var(--cinza-texto);padding:20px 0;text-align:center;">Carregando...</p>';
+        if (!state.userId) return;
+        try {
+          const { data } = await sb.from("empresas")
+            .select("id, razao_social, cidade, cnpj")
+            .eq("criado_por", state.userId)
+            .order("razao_social");
+          if (!data || data.length === 0) {
+            lista.innerHTML = '<div class="empty-state"><div class="empty-icon">🏢</div><h4>Nenhuma empresa cadastrada</h4><p>Clique em "+ Nova Empresa" para começar.</p></div>';
+            return;
+          }
+          lista.innerHTML = data.map(e => `
+            <div class="card" style="cursor:pointer;margin-bottom:10px;" onclick="selecionarEmpresa('${e.id}')">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                <div>
+                  <strong style="font-size:15px;">${e.razao_social}</strong>
+                  <div style="font-size:12px;color:var(--cinza-texto);margin-top:4px;">${[e.cidade, e.cnpj].filter(Boolean).join(' · ')}</div>
+                </div>
+                <span style="color:var(--verde-principal);font-size:13px;white-space:nowrap;">Ver detalhes →</span>
+              </div>
+            </div>`).join("");
+        } catch(e) {
+          lista.innerHTML = `<p style="color:var(--erro);padding:20px 0;">Erro ao carregar empresas.</p>`;
+        }
+      }
+
+      async function selecionarEmpresa(id) {
+        state.empresaId = id;
+        await carregarEmpresa();
+      }
+
+      function novaEmpresaForm() {
+        state.empresaId = null;
+        ["emp-razao","emp-cnpj","emp-telefone","emp-email","emp-cidade"].forEach(id => {
+          const el = document.getElementById(id); if (el) el.value = "";
+        });
+        document.getElementById("emp-lista-wrapper").style.display = "none";
+        document.getElementById("emp-confirmacao").style.display = "none";
+        document.getElementById("emp-form").style.display = "block";
+      }
+
+      function voltarListaEmpresas() {
+        document.getElementById("emp-confirmacao").style.display = "none";
+        document.getElementById("emp-form").style.display = "none";
+        carregarEmpresas();
+      }
+
       async function carregarEmpresa() {
         try {
           const { data, error } = await sb
@@ -4598,15 +4667,13 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
           document.getElementById("emp-telefone").value = data.telefone || "";
           document.getElementById("emp-email").value = data.email || "";
           document.getElementById("emp-cidade").value = data.cidade || "";
-          if (data.razao_social) {
-            mostrarResumoEmpresa({
-              razao_social: data.razao_social,
-              cnpj: data.cnpj,
-              telefone: data.telefone,
-              email: data.email,
-              cidade: data.cidade,
-            });
-          }
+          mostrarResumoEmpresa({
+            razao_social: data.razao_social,
+            cnpj: data.cnpj,
+            telefone: data.telefone,
+            email: data.email,
+            cidade: data.cidade,
+          });
         } catch (e) {}
       }
 
@@ -4621,6 +4688,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
             telefone: document.getElementById("emp-telefone").value.trim(),
             email: document.getElementById("emp-email").value.trim(),
             cidade: document.getElementById("emp-cidade").value.trim(),
+            criado_por: state.userId,
           };
           if (state.empresaId) {
             // Atualiza empresa existente
@@ -4662,12 +4730,14 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
             <span style="font-weight:600;color:var(--cinza-texto);min-width:110px;">${l.label}:</span>
             <span>${l.valor}</span>
           </div>`).join("");
+        document.getElementById("emp-lista-wrapper").style.display = "none";
         document.getElementById("emp-form").style.display = "none";
         document.getElementById("emp-confirmacao").style.display = "block";
       }
 
       function editarEmpresa() {
         document.getElementById("emp-confirmacao").style.display = "none";
+        document.getElementById("emp-lista-wrapper").style.display = "none";
         document.getElementById("emp-form").style.display = "block";
       }
 
@@ -4765,7 +4835,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         });
         document.getElementById("notif-panel").classList.remove("open");
         if (name === "agente3") atualizarConsolidadoAgente3();
-        if (name === "cadastro" && state.empresaId) carregarEmpresa();
+        if (name === "cadastro") carregarEmpresas();
         if (name === "animais" && state.empresaId) loadAnimals();
       }
 
