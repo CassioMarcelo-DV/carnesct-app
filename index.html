@@ -3741,7 +3741,23 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
 
               <!-- EMPRESA -->
               <div id="cad-empresa">
-                <div class="card">
+
+                <!-- Painel de confirmação (aparece após salvar) -->
+                <div id="emp-confirmacao" style="display:none;">
+                  <div class="card">
+                    <div class="card-header" style="margin-bottom:16px;">
+                      <div>
+                        <h3>Dados da Empresa</h3>
+                        <p style="color:var(--verde-principal);font-weight:600;margin-top:4px;">✅ Cadastro salvo com sucesso</p>
+                      </div>
+                      <button class="btn-outline" style="padding:8px 16px;font-size:13px;" onclick="editarEmpresa()">✏️ Editar dados</button>
+                    </div>
+                    <div id="emp-resumo" style="display:flex;flex-direction:column;gap:10px;"></div>
+                  </div>
+                </div>
+
+                <!-- Formulário de empresa -->
+                <div id="emp-form" class="card">
                   <div class="card-header">
                     <div><h3>Dados da Empresa</h3></div>
                   </div>
@@ -3814,8 +3830,8 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                   >
                     💾 Salvar dados
                   </button>
-                </div>
-              </div>
+                </div><!-- fim emp-form -->
+              </div><!-- fim cad-empresa -->
 
               <!-- COLABORADORES -->
               <div id="cad-colaboradores" style="display: none">
@@ -4582,6 +4598,15 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
           document.getElementById("emp-telefone").value = data.telefone || "";
           document.getElementById("emp-email").value = data.email || "";
           document.getElementById("emp-cidade").value = data.cidade || "";
+          if (data.razao_social) {
+            mostrarResumoEmpresa({
+              razao_social: data.razao_social,
+              cnpj: data.cnpj,
+              telefone: data.telefone,
+              email: data.email,
+              cidade: data.cidade,
+            });
+          }
         } catch (e) {}
       }
 
@@ -4617,9 +4642,33 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
           }
           showToast("✅ Dados da empresa salvos com sucesso!");
           document.querySelector(".user-info span").textContent = payload.razao_social;
+          mostrarResumoEmpresa(payload);
         } catch (e) {
           showToast("❌ Erro de conexão com o servidor: " + e.message);
         }
+      }
+
+      function mostrarResumoEmpresa(payload) {
+        const linhas = [
+          { label: "Razão Social", valor: payload.razao_social },
+          { label: "CNPJ",        valor: payload.cnpj },
+          { label: "Telefone",    valor: payload.telefone },
+          { label: "E-mail",      valor: payload.email },
+          { label: "Cidade / UF", valor: payload.cidade },
+        ];
+        document.getElementById("emp-resumo").innerHTML = linhas
+          .filter(l => l.valor)
+          .map(l => `<div style="display:flex;gap:8px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--cinza-medio);">
+            <span style="font-weight:600;color:var(--cinza-texto);min-width:110px;">${l.label}:</span>
+            <span>${l.valor}</span>
+          </div>`).join("");
+        document.getElementById("emp-form").style.display = "none";
+        document.getElementById("emp-confirmacao").style.display = "block";
+      }
+
+      function editarEmpresa() {
+        document.getElementById("emp-confirmacao").style.display = "none";
+        document.getElementById("emp-form").style.display = "block";
       }
 
       // Restaura sessão ao abrir a página — entra direto no app se já estiver logado
