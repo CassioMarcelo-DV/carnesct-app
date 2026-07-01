@@ -3831,7 +3831,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                   <button
                     class="btn-primary"
                     style="width: auto; padding: 10px 20px"
-                    onclick="openModal('modal-add-colab')"
+                    onclick="openAddColab()"
                   >
                     + Novo Colaborador
                   </button>
@@ -4126,48 +4126,57 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         <p>Adicione um membro à equipe com nível de acesso</p>
         <div class="form-row cols-2" style="margin-bottom: 14px">
           <div class="form-group" style="margin-bottom: 0">
-            <label>Nome completo</label
-            ><input type="text" id="colab-nome" placeholder="Nome do colaborador" />
+            <label>Nome completo</label>
+            <input type="text" id="colab-nome" placeholder="Nome do colaborador" />
           </div>
           <div class="form-group" style="margin-bottom: 0">
-            <label>CPF</label><input type="text" id="colab-cpf" placeholder="000.000.000-00" oninput="maskCPF(this)" maxlength="14" />
-          </div>
-        </div>
-        <div class="form-row cols-2" style="margin-bottom: 14px">
-          <div class="form-group" style="margin-bottom: 0">
-            <label>E-mail</label
-            ><input type="email" id="colab-email" placeholder="email@empresa.com" />
-          </div>
-          <div class="form-group" style="margin-bottom: 0">
-            <label>Telefone</label
-            ><input type="text" id="colab-tel" placeholder="(00) 00000-0000" oninput="maskTel(this)" maxlength="15" />
+            <label>CPF</label>
+            <input type="text" id="colab-cpf" placeholder="000.000.000-00" oninput="maskCPF(this)" maxlength="14" />
           </div>
         </div>
         <div class="form-row cols-2" style="margin-bottom: 14px">
           <div class="form-group" style="margin-bottom: 0">
-            <label>Cargo / Função</label
-            ><input type="text" id="colab-cargo" placeholder="Técnico Avaliador" />
+            <label>E-mail</label>
+            <input type="email" id="colab-email" placeholder="email@empresa.com" />
+          </div>
+          <div class="form-group" style="margin-bottom: 0">
+            <label>Telefone</label>
+            <input type="text" id="colab-tel" placeholder="(00) 00000-0000" oninput="maskTel(this)" maxlength="15" />
+          </div>
+        </div>
+        <div class="form-row cols-2" style="margin-bottom: 14px">
+          <div class="form-group" style="margin-bottom: 0">
+            <label>Cargo / Função</label>
+            <select id="colab-cargo">
+              <option value="Técnico Avaliador">Técnico Avaliador</option>
+              <option value="Veterinário">Veterinário</option>
+              <option value="Médico Veterinário">Médico Veterinário</option>
+              <option value="Zootecnista">Zootecnista</option>
+              <option value="Classificador de Carcaças">Classificador de Carcaças</option>
+              <option value="Inspetor de Qualidade">Inspetor de Qualidade</option>
+              <option value="Auxiliar Técnico">Auxiliar Técnico</option>
+              <option value="Gestor de Fazenda">Gestor de Fazenda</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Motorista">Motorista</option>
+              <option value="Outro">Outro</option>
+            </select>
           </div>
           <div class="form-group" style="margin-bottom: 0">
             <label>Nível de Acesso</label>
             <select id="colab-acesso">
               <option value="admin">⭐ Administrador</option>
-              <option value="tecnico">🔬 Técnico Avaliador</option>
+              <option value="tecnico" selected>🔬 Técnico Avaliador</option>
               <option value="analista">🧬 Analista de Qualidade</option>
               <option value="gestor">📊 Gestor Comercial</option>
               <option value="leitura">👁️ Somente Leitura</option>
             </select>
           </div>
         </div>
-        <div class="form-row cols-2" style="margin-bottom: 0">
-          <div class="form-group" style="margin-bottom: 0">
-            <label>Senha provisória</label
-            ><input type="password" id="colab-senha1" placeholder="Mínimo 6 caracteres" />
-          </div>
-          <div class="form-group" style="margin-bottom: 0">
-            <label>Confirmar senha</label
-            ><input type="password" id="colab-senha2" placeholder="Repita a senha" />
-          </div>
+        <div class="form-group" style="margin-bottom: 14px">
+          <label>Fazenda onde trabalha</label>
+          <select id="colab-fazenda">
+            <option value="">— Carregando fazendas... —</option>
+          </select>
         </div>
         <div style="display: flex; gap: 12px; margin-top: 20px">
           <button class="btn-primary" style="flex: 1" onclick="saveColab()">
@@ -5615,39 +5624,52 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         }
       }
 
+      async function openAddColab() {
+        const sel = document.getElementById("colab-fazenda");
+        sel.innerHTML = '<option value="">— Todas / Escritório —</option>';
+        if (state.empresaId) {
+          const { data } = await sb.from("fazendas").select("id, nome")
+            .eq("empresa_id", state.empresaId).order("nome");
+          (data || []).forEach(f => {
+            const opt = document.createElement("option");
+            opt.value = f.id;
+            opt.textContent = f.nome;
+            sel.appendChild(opt);
+          });
+        }
+        openModal("modal-add-colab");
+      }
+
       async function saveColab() {
-        const nome   = document.getElementById("colab-nome").value.trim();
-        const email  = document.getElementById("colab-email").value.trim();
-        const cargo  = document.getElementById("colab-cargo").value.trim();
-        const acesso = document.getElementById("colab-acesso").value;
-        const s1     = document.getElementById("colab-senha1").value;
-        const s2     = document.getElementById("colab-senha2").value;
-        if (!nome || !email || !s1) { showToast("⚠️ Nome, e-mail e senha são obrigatórios"); return; }
-        if (s1 !== s2) { showToast("⚠️ As senhas não coincidem"); return; }
+        const nome     = document.getElementById("colab-nome").value.trim();
+        const cpf      = document.getElementById("colab-cpf").value.trim();
+        const email    = document.getElementById("colab-email").value.trim();
+        const tel      = document.getElementById("colab-tel").value.trim();
+        const cargo    = document.getElementById("colab-cargo").value;
+        const acesso   = document.getElementById("colab-acesso").value;
+        const fazendaId = document.getElementById("colab-fazenda").value || null;
+
+        if (!nome) { showToast("⚠️ Nome é obrigatório"); return; }
         if (!state.empresaId) { showToast("⚠️ Empresa não identificada"); return; }
+
         try {
-          const savedSession = state.session;
-          const { data, error } = await sb.auth.signUp({ email, password: s1 });
-          if (error) { showToast("❌ " + error.message); return; }
-          // Restaura sessão do admin caso signUp tenha criado nova sessão
-          if (savedSession) {
-            await sb.auth.setSession({
-              access_token: savedSession.access_token,
-              refresh_token: savedSession.refresh_token,
-            });
-          }
           const { error: uErr } = await sb.from("usuarios").insert({
-            id: data.user.id,
             empresa_id: state.empresaId,
-            nome, email, cargo,
+            nome,
+            cpf: cpf || null,
+            email: email || null,
+            telefone: tel || null,
+            cargo,
             nivel_acesso: acesso,
             status: "ativo",
+            fazenda_id: fazendaId,
           });
-          if (uErr) { showToast("❌ Erro ao registrar: " + uErr.message); return; }
+          if (uErr) { showToast("❌ Erro ao cadastrar: " + uErr.message); return; }
           closeModal("modal-add-colab");
-          showToast("✅ Colaborador cadastrado! E-mail de confirmação enviado.");
-          ["colab-nome","colab-cpf","colab-email","colab-tel","colab-cargo","colab-senha1","colab-senha2"]
-            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+          showToast("✅ Colaborador cadastrado com sucesso!");
+          ["colab-nome","colab-cpf","colab-email","colab-tel"].forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = "";
+          });
           loadColabs();
         } catch (e) {
           showToast("❌ Erro de conexão: " + e.message);
