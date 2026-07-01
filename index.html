@@ -152,15 +152,35 @@
       .brand-icon {
         width: 56px;
         height: 56px;
+        background: #C41010;
         border-radius: 14px;
         overflow: hidden;
         margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
       }
-      .brand-icon img {
+      .brand-icon .ct-letters {
+        color: #fff;
+        font-size: 21px;
+        font-weight: 900;
+        font-family: Impact, Arial Black, sans-serif;
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+      .brand-icon .ct-bar {
+        background: #111;
         width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+        text-align: center;
+        padding: 2px 0;
+        color: #fff;
+        font-size: 6px;
+        font-weight: 700;
+        letter-spacing: 2.5px;
+        font-family: Arial, sans-serif;
+        margin-top: 3px;
       }
 
       .brand-name {
@@ -402,15 +422,34 @@
       .sidebar-brand-icon {
         width: 40px;
         height: 40px;
+        background: #C41010;
         border-radius: 10px;
         overflow: hidden;
         margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
-      .sidebar-brand-icon img {
+      .sidebar-brand-icon .ct-letters {
+        color: #fff;
+        font-size: 15px;
+        font-weight: 900;
+        font-family: Impact, Arial Black, sans-serif;
+        line-height: 1;
+        letter-spacing: -1px;
+      }
+      .sidebar-brand-icon .ct-bar {
+        background: #111;
         width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+        text-align: center;
+        padding: 1px 0;
+        color: #fff;
+        font-size: 5px;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        font-family: Arial, sans-serif;
+        margin-top: 2px;
       }
       .sidebar-brand-name {
         color: var(--branco);
@@ -1519,12 +1558,8 @@
         <div class="login-hero">
           <div class="brand-logo">
             <div class="brand-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" style="width:100%;height:100%;display:block;">
-                <rect width="80" height="80" fill="#C41010"/>
-                <text x="40" y="38" font-family="Arial Black,Impact,sans-serif" font-size="36" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle">CT</text>
-                <rect x="0" y="58" width="80" height="22" fill="#111111"/>
-                <text x="40" y="69" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="3">CARNES</text>
-              </svg>
+              <span class="ct-letters">CT</span>
+              <div class="ct-bar">CARNES</div>
             </div>
             <div class="brand-name">CARNESCT</div>
             <div class="brand-sub">Qualidade TopMeat</div>
@@ -1626,12 +1661,8 @@
         <aside class="sidebar" id="sidebar">
           <div class="sidebar-brand">
             <div class="sidebar-brand-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" style="width:100%;height:100%;display:block;">
-                <rect width="80" height="80" fill="#C41010"/>
-                <text x="40" y="38" font-family="Arial Black,Impact,sans-serif" font-size="36" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle">CT</text>
-                <rect x="0" y="58" width="80" height="22" fill="#111111"/>
-                <text x="40" y="69" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="white" text-anchor="middle" dominant-baseline="middle" letter-spacing="3">CARNES</text>
-              </svg>
+              <span class="ct-letters">CT</span>
+              <div class="ct-bar">CARNES</div>
             </div>
             <div class="sidebar-brand-name">CARNESCT</div>
             <div class="sidebar-brand-sub">Qualidade TopMeat</div>
