@@ -1368,12 +1368,13 @@
           padding: 10px 14px;
         }
 
-        table { font-size: 12px; }
+        table { font-size: 13px; }
         th, td { padding: 8px 6px !important; }
         thead { display: none; }
-        tr { display: block; margin-bottom: 12px; border: 1px solid var(--cinza-medio); border-radius: 8px; padding: 12px 10px; text-align: center; }
-        td { display: block; padding: 4px 6px !important; border: none !important; text-align: center; }
-        td > div { justify-content: center !important; }
+        tr { display: block; margin-bottom: 10px; border: 1px solid var(--cinza-medio); border-radius: 10px; padding: 12px 14px; background: var(--branco); }
+        td { display: flex; align-items: center; gap: 6px; padding: 3px 0 !important; border: none !important; font-size: 13px; }
+        td[data-label]::before { content: attr(data-label); font-weight: 700; color: var(--cinza-texto); font-size: 11px; min-width: 80px; flex-shrink: 0; }
+        td.td-actions { flex-wrap: wrap; gap: 6px; margin-top: 6px; padding-top: 8px !important; border-top: 1px solid var(--cinza-medio) !important; }
 
         .login-form-area { padding: 24px 16px; }
         .login-container { border-radius: 0; min-height: 100dvh; }
@@ -5599,15 +5600,13 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             const nomeEsc = (u.nome || "").replace(/'/g, "\\'");
             const cargoEsc = (u.cargo || "").replace(/'/g, "\\'");
             return `<tr>
-              <td><div style="display:flex;align-items:center;gap:10px;">
-                <div class="user-avatar" style="width:32px;height:32px;font-size:12px;background:var(--verde-grad);">${ini}</div>
+              <td data-label="Nome:"><div style="display:flex;align-items:center;gap:8px;">
+                <div class="user-avatar" style="width:28px;height:28px;font-size:11px;background:var(--verde-grad);flex-shrink:0;">${ini}</div>
                 <strong>${u.nome || "—"}</strong>
               </div></td>
-              <td>${u.cargo || "—"}</td>
-              <td>${u.email || "—"}</td>
-              <td>${nivel}</td>
-              <td>${status}</td>
-              <td><button class="btn-secondary" style="padding:6px 12px;font-size:11px"
+              <td data-label="Função:">${u.cargo || "—"}</td>
+              <td data-label="E-mail:">${u.email || "—"}</td>
+              <td class="td-actions">${nivel} ${status} <button class="btn-secondary" style="padding:5px 10px;font-size:11px;margin-left:auto;"
                 onclick="editColab('${u.id}','${nomeEsc}','${cargoEsc}','${u.nivel_acesso || "leitura"}','${u.status || "ativo"}')">Editar</button></td>
             </tr>`;
           }).join("");
@@ -5722,12 +5721,12 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             const pEsc = (f.proprietario || "").replace(/'/g, "\\'");
             const mEsc = (f.municipio || "").replace(/'/g, "\\'");
             return `<tr>
-              <td><strong>${f.nome || "—"}</strong></td>
-              <td>${f.proprietario || "—"}</td>
-              <td>${local}</td>
-              <td>${esp}</td>
-              <td>${f.qtd_animais ?? "—"}</td>
-              <td><button class="btn-secondary" style="padding:6px 12px;font-size:11px"
+              <td data-label="Nome:"><strong>${f.nome || "—"}</strong></td>
+              <td data-label="Proprietário:">${f.proprietario || "—"}</td>
+              <td data-label="Local:">${local}</td>
+              <td data-label="Espécies:">${esp}</td>
+              <td data-label="Animais:">${f.qtd_animais ?? "—"}</td>
+              <td class="td-actions"><button class="btn-secondary" style="padding:5px 10px;font-size:11px;"
                 onclick="editFazenda('${f.id}','${nEsc}','${pEsc}','${mEsc}','${f.uf || ""}','${f.telefone || ""}')">Editar</button></td>
             </tr>`;
           }).join("");
