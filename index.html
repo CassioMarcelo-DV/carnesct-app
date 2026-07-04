@@ -3931,16 +3931,18 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                     </div>
                     <div class="form-group" style="margin-bottom:10px;">
                       <label>Chave API</label>
-                      <div style="display:flex;gap:6px;">
-                        <input type="password" id="key-ag1" placeholder="sk-..." style="flex:1;font-size:12px;" />
-                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag1')">👁</button>
+                      <div id="key-section-ag1">
+                        <div style="display:flex;gap:6px;">
+                          <input type="password" id="key-ag1" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                          <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag1')">👁</button>
+                        </div>
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
                       <label>Modelo</label>
                       <select id="model-ag1"></select>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag1')">💾 Salvar</button>
+                    <button id="save-btn-ag1" class="btn-secondary" onclick="saveKey('ag1')">💾 Salvar</button>
                   </div>
 
                   <!-- AGENTE 2 -->
@@ -3956,16 +3958,18 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                     </div>
                     <div class="form-group" style="margin-bottom:10px;">
                       <label>Chave API</label>
-                      <div style="display:flex;gap:6px;">
-                        <input type="password" id="key-ag2" placeholder="sk-..." style="flex:1;font-size:12px;" />
-                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag2')">👁</button>
+                      <div id="key-section-ag2">
+                        <div style="display:flex;gap:6px;">
+                          <input type="password" id="key-ag2" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                          <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag2')">👁</button>
+                        </div>
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
                       <label>Modelo</label>
                       <select id="model-ag2"></select>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag2')">💾 Salvar</button>
+                    <button id="save-btn-ag2" class="btn-secondary" onclick="saveKey('ag2')">💾 Salvar</button>
                   </div>
 
                   <!-- AGENTE 3 -->
@@ -3981,16 +3985,18 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                     </div>
                     <div class="form-group" style="margin-bottom:10px;">
                       <label>Chave API</label>
-                      <div style="display:flex;gap:6px;">
-                        <input type="password" id="key-ag3" placeholder="sk-..." style="flex:1;font-size:12px;" />
-                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag3')">👁</button>
+                      <div id="key-section-ag3">
+                        <div style="display:flex;gap:6px;">
+                          <input type="password" id="key-ag3" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                          <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag3')">👁</button>
+                        </div>
                       </div>
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
                       <label>Modelo</label>
                       <select id="model-ag3"></select>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag3')">💾 Salvar</button>
+                    <button id="save-btn-ag3" class="btn-secondary" onclick="saveKey('ag3')">💾 Salvar</button>
                   </div>
                 </div>
 
@@ -4412,9 +4418,10 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
             updateModelOptions(ag);
             const modSel = document.getElementById("model-" + ag);
             if (modSel && saved[ag].model) modSel.value = saved[ag].model;
-            const keyInp = document.getElementById("key-" + ag);
-            if (keyInp && saved[ag].key) keyInp.value = saved[ag].key;
-            updateKeyStatus(ag, !!(saved[ag].key));
+            if (saved[ag].key) {
+              showMaskedKey(ag, saved[ag].key);
+              updateKeyStatus(ag, true);
+            }
           } else {
             updateModelOptions(ag);
           }
@@ -4880,20 +4887,43 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
       // ========== CHAVE API POR AGENTE ==========
       function toggleKey(agent) {
         const inp = document.getElementById("key-" + agent);
-        inp.type = inp.type === "password" ? "text" : "password";
+        if (inp) inp.type = inp.type === "password" ? "text" : "password";
+      }
+
+      function showMaskedKey(agent, key) {
+        const masked = "••••••••••••" + key.slice(-4);
+        document.getElementById("key-section-" + agent).innerHTML =
+          `<div style="display:flex;align-items:center;gap:8px;background:var(--cinza-claro);padding:8px 12px;border-radius:var(--radius);font-family:monospace;font-size:13px;">
+            <span style="flex:1;letter-spacing:1px;">${masked}</span>
+            <button class="btn-outline" style="padding:4px 10px;font-size:12px;white-space:nowrap;" onclick="editKey('${agent}')">Alterar</button>
+          </div>`;
+        const saveBtn = document.getElementById("save-btn-" + agent);
+        if (saveBtn) saveBtn.style.display = "none";
+      }
+
+      function editKey(agent) {
+        document.getElementById("key-section-" + agent).innerHTML =
+          `<div style="display:flex;gap:6px;">
+            <input type="password" id="key-${agent}" placeholder="Cole a nova chave aqui..." style="flex:1;font-size:12px;" />
+            <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('${agent}')">👁</button>
+          </div>`;
+        const saveBtn = document.getElementById("save-btn-" + agent);
+        if (saveBtn) saveBtn.style.display = "";
       }
 
       function saveKey(agent) {
         const provider = document.getElementById("provider-" + agent).value;
         const model    = document.getElementById("model-" + agent).value;
-        const key      = document.getElementById("key-" + agent).value.trim();
-        if (!key) { showToast("⚠️ Informe a chave API do " + agent.toUpperCase() + " antes de salvar"); return; }
+        const keyInp   = document.getElementById("key-" + agent);
+        const key      = keyInp ? keyInp.value.trim() : "";
+        if (!key) { showToast("⚠️ Informe a chave API antes de salvar"); return; }
         state.apiConfig[agent] = { provider, model, key };
         try {
           localStorage.setItem("carnesct_apiconfig", JSON.stringify(state.apiConfig));
         } catch (e) {}
+        showMaskedKey(agent, key);
         updateKeyStatus(agent, true);
-        showToast("✅ " + agent + " configurado — " + provider.toUpperCase() + " · " + model);
+        showToast("✅ Chave salva — " + provider.toUpperCase() + " · " + model);
       }
 
       function updateKeyStatus(agent, configured) {
