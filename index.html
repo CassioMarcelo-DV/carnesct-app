@@ -3915,102 +3915,82 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
 
             <!-- ===== CONFIGURAÇÕES API ===== -->
             <div class="screen" id="screen-configuracoes">
-              <div class="alert alert-verde">
-                🔒 Suas chaves de API ficam protegidas no servidor (Edge
-                Function), nunca no navegador. Aqui você só escolhe qual
-                provedor e modelo cada agente deve usar.
-              </div>
 
               <div class="grid-2 gap-16">
                 <div>
+                  <!-- AGENTE 1 -->
                   <div class="api-config-item">
-                    <h4>
-                      🔬 TopMeat Metrics
-                      <span class="api-status-dot" id="dot-ag1"></span>
-                    </h4>
-                    <p>
-                      Responsável pela classificação objetiva e score técnico da
-                      carcaça.
-                    </p>
-                    <div class="form-row cols-2" style="margin-bottom: 12px">
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Provedor de IA</label>
-                        <select
-                          id="provider-ag1"
-                          onchange="updateModelOptions('ag1')"
-                        >
-                          <option value="openai">OpenAI</option>
-                          <option value="anthropic">Anthropic (Claude)</option>
-                        </select>
-                      </div>
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Modelo</label>
-                        <select id="model-ag1"></select>
+                    <h4>🔬 TopMeat Metrics <span class="api-status-dot" id="dot-ag1"></span></h4>
+                    <p>Classificação objetiva e score técnico da carcaça.</p>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Provedor de IA</label>
+                      <select id="provider-ag1" onchange="updateModelOptions('ag1')">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                      </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Chave API</label>
+                      <div style="display:flex;gap:6px;">
+                        <input type="password" id="key-ag1" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag1')">👁</button>
                       </div>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag1')">
-                      💾 Salvar configuração
-                    </button>
+                    <div class="form-group" style="margin-bottom:12px;">
+                      <label>Modelo</label>
+                      <select id="model-ag1"></select>
+                    </div>
+                    <button class="btn-secondary" onclick="saveKey('ag1')">💾 Salvar</button>
                   </div>
 
+                  <!-- AGENTE 2 -->
                   <div class="api-config-item">
-                    <h4>
-                      🧬 TopMeat Carcass
-                      <span class="api-status-dot" id="dot-ag2"></span>
-                    </h4>
-                    <p>
-                      Prevê maciez, CRA, cor e qualidade da carne a partir dos
-                      parâmetros físico-químicos.
-                    </p>
-                    <div class="form-row cols-2" style="margin-bottom: 12px">
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Provedor de IA</label>
-                        <select
-                          id="provider-ag2"
-                          onchange="updateModelOptions('ag2')"
-                        >
-                          <option value="openai">OpenAI</option>
-                          <option value="anthropic">Anthropic (Claude)</option>
-                        </select>
-                      </div>
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Modelo</label>
-                        <select id="model-ag2"></select>
+                    <h4>🧬 TopMeat Carcass <span class="api-status-dot" id="dot-ag2"></span></h4>
+                    <p>Previsão de maciez, CRA, cor e qualidade da carne.</p>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Provedor de IA</label>
+                      <select id="provider-ag2" onchange="updateModelOptions('ag2')">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                      </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Chave API</label>
+                      <div style="display:flex;gap:6px;">
+                        <input type="password" id="key-ag2" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag2')">👁</button>
                       </div>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag2')">
-                      💾 Salvar configuração
-                    </button>
+                    <div class="form-group" style="margin-bottom:12px;">
+                      <label>Modelo</label>
+                      <select id="model-ag2"></select>
+                    </div>
+                    <button class="btn-secondary" onclick="saveKey('ag2')">💾 Salvar</button>
                   </div>
 
+                  <!-- AGENTE 3 -->
                   <div class="api-config-item">
-                    <h4>
-                      ⚙️ TopMeat Quality
-                      <span class="api-status-dot" id="dot-ag3"></span>
-                    </h4>
-                    <p>
-                      Define destinação, bonificações e alertas industriais com
-                      base em todos os parâmetros coletados.
-                    </p>
-                    <div class="form-row cols-2" style="margin-bottom: 12px">
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Provedor de IA</label>
-                        <select
-                          id="provider-ag3"
-                          onchange="updateModelOptions('ag3')"
-                        >
-                          <option value="openai">OpenAI</option>
-                          <option value="anthropic">Anthropic (Claude)</option>
-                        </select>
-                      </div>
-                      <div class="form-group" style="margin-bottom: 0">
-                        <label>Modelo</label>
-                        <select id="model-ag3"></select>
+                    <h4>⚙️ TopMeat Quality <span class="api-status-dot" id="dot-ag3"></span></h4>
+                    <p>Destinação, bonificações e alertas industriais.</p>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Provedor de IA</label>
+                      <select id="provider-ag3" onchange="updateModelOptions('ag3')">
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic (Claude)</option>
+                      </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                      <label>Chave API</label>
+                      <div style="display:flex;gap:6px;">
+                        <input type="password" id="key-ag3" placeholder="sk-..." style="flex:1;font-size:12px;" />
+                        <button class="btn-outline" style="padding:6px 10px;font-size:13px;" onclick="toggleKey('ag3')">👁</button>
                       </div>
                     </div>
-                    <button class="btn-secondary" onclick="saveKey('ag3')">
-                      💾 Salvar configuração
-                    </button>
+                    <div class="form-group" style="margin-bottom:12px;">
+                      <label>Modelo</label>
+                      <select id="model-ag3"></select>
+                    </div>
+                    <button class="btn-secondary" onclick="saveKey('ag3')">💾 Salvar</button>
                   </div>
                 </div>
 
@@ -4421,24 +4401,27 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         currentScreen: "dashboard",
       };
 
-      ["ag1", "ag2", "ag3"].forEach(updateModelOptions);
-
-      // Carregar config salva (provedor/modelo escolhidos — a chave fica só no servidor)
+      // Carregar configuração salva por agente (provedor, modelo, chave)
       try {
-        const saved = JSON.parse(
-          localStorage.getItem("carnesct_apiconfig") || "{}",
-        );
+        const saved = JSON.parse(localStorage.getItem("carnesct_apiconfig") || "{}");
         ["ag1", "ag2", "ag3"].forEach((ag) => {
           if (saved[ag]) {
-            state.apiConfig[ag] = saved[ag];
-            document.getElementById("provider-" + ag).value =
-              saved[ag].provider || "openai";
+            state.apiConfig[ag] = { ...state.apiConfig[ag], ...saved[ag] };
+            const provSel = document.getElementById("provider-" + ag);
+            if (provSel && saved[ag].provider) provSel.value = saved[ag].provider;
             updateModelOptions(ag);
-            document.getElementById("model-" + ag).value =
-              saved[ag].model || "gpt-4o";
+            const modSel = document.getElementById("model-" + ag);
+            if (modSel && saved[ag].model) modSel.value = saved[ag].model;
+            const keyInp = document.getElementById("key-" + ag);
+            if (keyInp && saved[ag].key) keyInp.value = saved[ag].key;
+            updateKeyStatus(ag, !!(saved[ag].key));
+          } else {
+            updateModelOptions(ag);
           }
         });
-      } catch (e) {}
+      } catch (e) {
+        ["ag1","ag2","ag3"].forEach(updateModelOptions);
+      }
 
       // ========== LOGIN (Supabase Auth real) ==========
       async function doLogin() {
@@ -4894,26 +4877,23 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         }, 3000);
       }
 
-      // ========== CONFIG DE PROVEDOR/MODELO (sem chave — fica só no servidor) ==========
+      // ========== CHAVE API POR AGENTE ==========
+      function toggleKey(agent) {
+        const inp = document.getElementById("key-" + agent);
+        inp.type = inp.type === "password" ? "text" : "password";
+      }
+
       function saveKey(agent) {
         const provider = document.getElementById("provider-" + agent).value;
-        const model = document.getElementById("model-" + agent).value;
-        state.apiConfig[agent] = { provider, model };
+        const model    = document.getElementById("model-" + agent).value;
+        const key      = document.getElementById("key-" + agent).value.trim();
+        if (!key) { showToast("⚠️ Informe a chave API do " + agent.toUpperCase() + " antes de salvar"); return; }
+        state.apiConfig[agent] = { provider, model, key };
         try {
-          localStorage.setItem(
-            "carnesct_apiconfig",
-            JSON.stringify(state.apiConfig),
-          );
+          localStorage.setItem("carnesct_apiconfig", JSON.stringify(state.apiConfig));
         } catch (e) {}
         updateKeyStatus(agent, true);
-        showToast(
-          "✅ " +
-            agent.toUpperCase() +
-            " configurado para usar " +
-            provider.toUpperCase() +
-            " · " +
-            model,
-        );
+        showToast("✅ " + agent + " configurado — " + provider.toUpperCase() + " · " + model);
       }
 
       function updateKeyStatus(agent, configured) {
@@ -4930,13 +4910,52 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         }
       }
 
-      // ========== CHAMADA À IA REAL — via Edge Function (a chave nunca passa pelo navegador) ==========
+      // ========== CHAMADA À IA — direto com chave do agente ou via Edge Function ==========
       async function callAI(agent, prompt) {
-        const cfg = state.apiConfig[agent];
+        const cfg      = state.apiConfig[agent];
+        const apiKey   = cfg.key || "";
+        const provider = cfg.provider || "openai";
+
+        if (apiKey) {
+          if (provider === "openai") {
+            const res = await fetch("https://api.openai.com/v1/chat/completions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+              body: JSON.stringify({
+                model: cfg.model || "gpt-4o",
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 1500,
+                temperature: 0.3,
+              }),
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+            return data.choices[0].message.content;
+          } else if (provider === "anthropic") {
+            const res = await fetch("https://api.anthropic.com/v1/messages", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": apiKey,
+                "anthropic-version": "2023-06-01",
+                "anthropic-dangerous-direct-browser-access": "true",
+              },
+              body: JSON.stringify({
+                model: cfg.model || "claude-sonnet-4-6",
+                max_tokens: 1500,
+                messages: [{ role: "user", content: prompt }],
+              }),
+            });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+            return data.content[0].text;
+          }
+        }
+
+        // Fallback: Edge Function (sem chave configurada)
         const { data: sessionData } = await sb.auth.getSession();
         const accessToken = sessionData?.session?.access_token;
-        if (!accessToken)
-          throw new Error("sessão expirada, faça login novamente");
+        if (!accessToken) throw new Error("Configure a chave API nas Configurações (⚙️) para usar os agentes.");
 
         const res = await fetch(SUPABASE_URL + "/functions/v1/ai-proxy", {
           method: "POST",
@@ -4945,12 +4964,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
             Authorization: "Bearer " + accessToken,
             apikey: SUPABASE_ANON_KEY,
           },
-          body: JSON.stringify({
-            provider: cfg.provider,
-            model: cfg.model,
-            prompt,
-            agent,
-          }),
+          body: JSON.stringify({ provider, model: cfg.model, prompt, agent }),
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
