@@ -4831,7 +4831,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
 
       // ========== TABS ==========
       function switchTab(prefix, name, btn) {
-        document
+        btn.closest(".tabs").parentElement
           .querySelectorAll('[id^="' + prefix + '-"]')
           .forEach((el) => (el.style.display = "none"));
         document.getElementById(prefix + "-" + name).style.display = "block";
@@ -5159,6 +5159,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
       async function runAgent1() {
         const d = coletarDadosAgente1();
         const resultEl = document.getElementById("ag1-result");
+        resultEl.style.display = "";
         const textEl = document.getElementById("ag1-response-text");
         document.getElementById("score-display").textContent = "--";
         document.getElementById("score-badge-area").innerHTML = "";
@@ -5336,6 +5337,7 @@ Carcaça classificada. Pontuação técnica: ${score}/100. Dados completos (biom
 
       async function runAgent2() {
         const d = coletarDadosAgente2();
+        document.getElementById("ag2-result").style.display = "";
         const textEl = document.getElementById("ag2-response-text");
         document.getElementById("a2-score").textContent = "--";
         document.getElementById("a2-prob").textContent = "--%";
