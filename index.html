@@ -2020,7 +2020,7 @@
                   <button
                     class="btn-primary"
                     style="width: auto; padding: 10px 20px"
-                    onclick="openModal('modal-add-animal')"
+                    onclick="openNovoAnimal()"
                   >
                     + Novo Animal
                   </button>
@@ -4075,11 +4075,10 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
     <!-- ========== MODAIS ========== -->
     <div class="modal-overlay" id="modal-add-animal">
       <div class="modal">
-        <button class="modal-close" onclick="closeModal('modal-add-animal')">
-          ✕
-        </button>
-        <h3>🐑 Novo Animal</h3>
-        <p>Cadastre um novo animal para avaliação</p>
+        <button class="modal-close" onclick="closeModal('modal-add-animal')">✕</button>
+        <h3 id="animal-modal-title">🐑 Novo Animal</h3>
+        <p id="animal-modal-sub">Cadastre um novo animal para avaliação</p>
+        <input type="hidden" id="animal-id" value="" />
         <div class="form-row cols-2" style="margin-bottom: 14px">
           <div class="form-group" style="margin-bottom: 0">
             <label>Número</label><input type="text" id="animal-num" placeholder="OV-0031" />
@@ -4119,12 +4118,10 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
           </div>
         </div>
         <div style="display: flex; gap: 12px; margin-top: 8px">
-          <button class="btn-primary" style="flex: 1" onclick="saveAnimal()">
+          <button class="btn-primary" id="animal-save-btn" style="flex: 1" onclick="saveAnimal()">
             Cadastrar e Avaliar
           </button>
-          <button class="btn-secondary" onclick="closeModal('modal-add-animal')">
-            Cancelar
-          </button>
+          <button class="btn-secondary" onclick="closeModal('modal-add-animal')">Cancelar</button>
         </div>
       </div>
     </div>
@@ -5981,8 +5978,11 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--cinza-texto);padding:20px;">Nenhum animal cadastrado ainda.</td></tr>';
             return;
           }
+          state.animaisData = {};
+          data.forEach(a => state.animaisData[a.id] = a);
           tbody.innerHTML = data.map(a => {
             const dt = a.data_nascimento ? new Date(a.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR") : "—";
+            const numEsc = (a.numero || "").replace(/'/g, "\\'");
             return `<tr>
               <td><strong>${a.numero || "—"}</strong><br><span class="text-muted">${a.brinco || ""}</span></td>
               <td>${a.especie || "—"}<br><span class="text-muted">${a.raca || ""}</span></td>
@@ -5991,7 +5991,11 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
               <td><strong style="color:var(--cinza-texto)">—</strong></td>
               <td><span class="badge">⏳ Pendente</span></td>
               <td class="text-muted">${dt}</td>
-              <td><button class="btn-secondary" style="padding:6px 12px;font-size:11px" onclick="showScreen('agente1')">Ver análise</button></td>
+              <td style="white-space:nowrap">
+                <button class="btn-secondary" style="padding:5px 10px;font-size:11px" onclick="showScreen('agente1')">Analisar</button>
+                <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px" onclick="editAnimal('${a.id}')">Editar</button>
+                <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px;color:var(--erro);border-color:var(--erro)" onclick="deleteAnimal('${a.id}','${numEsc}')">Excluir</button>
+              </td>
             </tr>`;
           }).join("");
         } catch (e) {
@@ -5999,7 +6003,49 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         }
       }
 
+      function openNovoAnimal() {
+        document.getElementById("animal-id").value = "";
+        document.getElementById("animal-modal-title").textContent = "🐑 Novo Animal";
+        document.getElementById("animal-modal-sub").textContent = "Cadastre um novo animal para avaliação";
+        document.getElementById("animal-save-btn").textContent = "Cadastrar e Avaliar";
+        ["animal-num","animal-brinco","animal-raca","animal-fazenda","animal-nasc"]
+          .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+        document.getElementById("animal-especie").value = "Ovino";
+        document.getElementById("animal-sexo").value = "Macho";
+        openModal("modal-add-animal");
+      }
+
+      function editAnimal(id) {
+        const a = state.animaisData && state.animaisData[id];
+        if (!a) { showToast("⚠️ Animal não encontrado"); return; }
+        document.getElementById("animal-id").value = id;
+        document.getElementById("animal-modal-title").textContent = "✏️ Editar Animal";
+        document.getElementById("animal-modal-sub").textContent = "Atualize os dados do animal";
+        document.getElementById("animal-save-btn").textContent = "Salvar alterações";
+        document.getElementById("animal-num").value = a.numero || "";
+        document.getElementById("animal-brinco").value = a.brinco || "";
+        document.getElementById("animal-especie").value = a.especie || "Ovino";
+        document.getElementById("animal-raca").value = a.raca || "";
+        document.getElementById("animal-sexo").value = a.sexo || "Macho";
+        document.getElementById("animal-fazenda").value = a.proprietario || "";
+        document.getElementById("animal-nasc").value = a.data_nascimento || "";
+        openModal("modal-add-animal");
+      }
+
+      async function deleteAnimal(id, num) {
+        if (!confirm(`Excluir o animal "${num}"?\nEsta ação não pode ser desfeita.`)) return;
+        try {
+          const { error } = await sb.from("animais").delete().eq("id", id);
+          if (error) throw error;
+          showToast("✅ Animal excluído.");
+          loadAnimals();
+        } catch (e) {
+          showToast("❌ Erro ao excluir: " + e.message);
+        }
+      }
+
       async function saveAnimal() {
+        const animalId = document.getElementById("animal-id").value;
         const num    = document.getElementById("animal-num").value.trim();
         const brinco = document.getElementById("animal-brinco").value.trim();
         const esp    = document.getElementById("animal-especie").value;
@@ -6009,21 +6055,26 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         const nasc   = document.getElementById("animal-nasc").value;
         if (!num) { showToast("⚠️ Número do animal é obrigatório"); return; }
         if (!state.empresaId) { showToast("⚠️ Empresa não identificada"); return; }
+        const payload = {
+          empresa_id: state.empresaId,
+          numero: num, brinco, especie: esp, raca, sexo,
+          proprietario: faz,
+          data_nascimento: nasc || null,
+        };
         try {
-          const { error } = await sb.from("animais").insert({
-            empresa_id: state.empresaId,
-            numero: num, brinco, especie: esp, raca, sexo,
-            proprietario: faz,
-            data_nascimento: nasc || null,
-          });
-          if (error) throw error;
+          if (animalId) {
+            const { error } = await sb.from("animais").update(payload).eq("id", animalId);
+            if (error) throw error;
+            showToast("✅ Animal atualizado!");
+          } else {
+            const { error } = await sb.from("animais").insert(payload);
+            if (error) throw error;
+            showToast("✅ Animal cadastrado! Agora faça a avaliação.");
+          }
           closeModal("modal-add-animal");
-          showToast("✅ Animal cadastrado! Agora faça a avaliação.");
-          ["animal-num","animal-brinco","animal-raca","animal-fazenda","animal-nasc"]
-            .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
           loadAnimals();
         } catch (e) {
-          showToast("❌ Erro ao cadastrar: " + e.message);
+          showToast("❌ Erro ao salvar: " + e.message);
         }
       }
 
