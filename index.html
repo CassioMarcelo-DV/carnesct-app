@@ -2230,6 +2230,12 @@
                     >
                       Na Carcaça
                     </button>
+                    <button
+                      class="tab"
+                      onclick="switchTab('ag1', 'cortes', this)"
+                    >
+                      Cortes da Carcaça
+                    </button>
                   </div>
 
                   <!-- IDENTIFICAÇÃO -->
@@ -2635,6 +2641,62 @@
                           value="22.5"
                           step="0.1"
                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- CORTES DA CARCAÇA -->
+                  <div id="ag1-cortes" style="display: none">
+                    <div class="form-section-title">Peso dos Cortes (kg)</div>
+                    <p style="font-size:12px;color:var(--cinza-texto);margin-bottom:14px;">
+                      Insira o peso de cada corte após a desossa. Referência: <strong>0,5 a 4 kg</strong> por corte.
+                    </p>
+                    <div class="form-row cols-2" style="margin-bottom: 14px">
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Pescoço (kg)</label>
+                        <input type="number" id="a1-c-pescoco" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Braço Anterior (kg)</label>
+                        <input type="number" id="a1-c-braco-ant" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                    </div>
+                    <div class="form-row cols-2" style="margin-bottom: 14px">
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Paleta (kg)</label>
+                        <input type="number" id="a1-c-paleta" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Costeleta (kg)</label>
+                        <input type="number" id="a1-c-costeleta" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                    </div>
+                    <div class="form-row cols-2" style="margin-bottom: 14px">
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Costela / Fralda (kg)</label>
+                        <input type="number" id="a1-c-costela" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Lombo (kg)</label>
+                        <input type="number" id="a1-c-lombo" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                    </div>
+                    <div class="form-row cols-2" style="margin-bottom: 0">
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Perna (kg)</label>
+                        <input type="number" id="a1-c-perna" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
+                      </div>
+                      <div class="form-group" style="margin-bottom: 0">
+                        <label>Braço Posterior (kg)</label>
+                        <input type="number" id="a1-c-braco-post" placeholder="0,0" step="0.1" min="0" max="10" />
+                        <span style="font-size:11px;color:var(--cinza-texto);">Ref: 0,5 – 4 kg</span>
                       </div>
                     </div>
                   </div>
@@ -5069,6 +5131,14 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
           aol: get("a1-aol"),
           egs: get("a1-egs"),
           lgc: get("a1-lgc"),
+          c_pescoco:    get("a1-c-pescoco"),
+          c_braco_ant:  get("a1-c-braco-ant"),
+          c_paleta:     get("a1-c-paleta"),
+          c_costeleta:  get("a1-c-costeleta"),
+          c_costela:    get("a1-c-costela"),
+          c_lombo:      get("a1-c-lombo"),
+          c_perna:      get("a1-c-perna"),
+          c_braco_post: get("a1-c-braco-post"),
         };
       }
 
@@ -5175,14 +5245,19 @@ DADOS DO ANIMAL: ${d.num} | Espécie: ${d.especie} | Raça: ${d.raca} | Sexo: ${
 MEDIDAS BIOMÉTRICAS: Peso corporal ${d.peso} kg | Perímetro torácico ${d.ptorax} cm | Altura de cernelha ${d.hcern} cm | Altura de garupa ${d.hgar} cm | Comprimento corporal ${d.ccorp} cm | Circunferência abdominal ${d.cabd} cm | Largura de peito ${d.lpeito} cm | Largura de garupa ${d.lgar} cm | Perímetro da garupa ${d.pgar} cm | Comprimento diagonal ${d.cdiag} cm | Comprimento de perna anterior ${d.cpa} cm | Comprimento de perna posterior ${d.cpp} cm
  
 MEDIDAS NA CARCAÇA: pH inicial ${d.ph1} | pH final ${d.ph2} | Peso carcaça quente ${d.pcq} kg | Peso carcaça fria ${d.pcf} kg | Peso meia carcaça ${d.pmc} kg | Perda por resfriamento ${d.perdares}% | Rendimento carcaça quente ${d.rcq}% | Rendimento carcaça fria ${d.rcf}% | Comprimento interno ${d.ci} cm | Comprimento da perna ${d.cp} cm | Comprimento total de perna ${d.ctp} cm | Índice de compacidade ${d.ic} | Profundidade de tórax ${d.pt} cm | AOL ${d.aol} cm² | Espessura de gordura subcutânea ${d.egs} mm
- 
+${(d.c_pescoco||d.c_braco_ant||d.c_paleta||d.c_costeleta||d.c_costela||d.c_lombo||d.c_perna||d.c_braco_post) ? `
+CORTES DA CARCAÇA (peso pesado pelo funcionário — referência: 0,5 a 4 kg por corte):
+Pescoço: ${d.c_pescoco||"—"} kg | Braço Anterior: ${d.c_braco_ant||"—"} kg | Paleta: ${d.c_paleta||"—"} kg | Costeleta: ${d.c_costeleta||"—"} kg | Costela/Fralda: ${d.c_costela||"—"} kg | Lombo: ${d.c_lombo||"—"} kg | Perna: ${d.c_perna||"—"} kg | Braço Posterior: ${d.c_braco_post||"—"} kg
+Total dos cortes informados: ${[d.c_pescoco,d.c_braco_ant,d.c_paleta,d.c_costeleta,d.c_costela,d.c_lombo,d.c_perna,d.c_braco_post].reduce((s,v)=>s+(parseFloat(v)||0),0).toFixed(2)} kg` : ""}
+
 TAREFA:
 1. Calcule um SCORE TÉCNICO de 0 a 100 (padrão TopMeat/CarnesCT)
 2. Avalie conformação, gordura, AOL, rendimento e acabamento
 3. Informe se o lote é uniforme ou heterogêneo
 4. Emita alertas sobre carcaças fora do padrão
-5. Prepare dados padronizados para o Agente 02
- 
+5. Se houver dados de cortes, analise o rendimento de cada corte, compare com a referência (0,5–4 kg), calcule o percentual de cada corte sobre o total, e identifique cortes fora do padrão
+6. Prepare dados padronizados para o Agente 02
+
 Responda em português brasileiro, técnico e direto. Inicie com "SCORE: XX/100" na primeira linha.`;
 
           const text = await callAI("ag1", prompt);
