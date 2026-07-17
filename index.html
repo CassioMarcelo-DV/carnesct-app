@@ -3278,147 +3278,71 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
               <div class="flex-between mb-24">
                 <div></div>
                 <select
-                  style="
-                    padding: 10px 16px;
-                    border: 1.5px solid var(--cinza-medio);
-                    border-radius: var(--radius);
-                    font-size: 13px;
-                    outline: none;
-                    font-family: Inter, sans-serif;
-                  "
+                  style="padding: 10px 16px; border: 1.5px solid var(--cinza-medio); border-radius: var(--radius); font-size: 13px; outline: none; font-family: Inter, sans-serif;"
                   id="animal-select"
                   onchange="loadAnimalMetrics()"
                 >
-                  <option value="OV-0029">OV-0029 — Dorper — 18/06/2025</option>
-                  <option value="OV-0028">
-                    OV-0028 — Santa Inês — 18/06/2025
-                  </option>
-                  <option value="CA-0014">CA-0014 — Boer — 17/06/2025</option>
-                  <option value="OV-0027">OV-0027 — Dorper — 17/06/2025</option>
+                  <option value="">Selecione um animal...</option>
                 </select>
               </div>
 
-              <div class="grid-4 mb-24">
-                <div class="kpi-card verde">
-                  <div class="kpi-icon">🏆</div>
-                  <div class="kpi-value" id="ma-score">87</div>
-                  <div class="kpi-label">Pontuação TopMeat</div>
-                </div>
-                <div class="kpi-card azul">
-                  <div class="kpi-icon">⚖️</div>
-                  <div class="kpi-value" id="ma-peso">13,2 kg</div>
-                  <div class="kpi-label">Peso da carcaça</div>
-                </div>
-                <div class="kpi-card dourado">
-                  <div class="kpi-icon">📐</div>
-                  <div class="kpi-value" id="ma-aol">14,5 cm²</div>
-                  <div class="kpi-label">AOL — Olho de Lombo</div>
-                </div>
-                <div class="kpi-card verde">
-                  <div class="kpi-icon">💧</div>
-                  <div class="kpi-value" id="ma-rend">46,8%</div>
-                  <div class="kpi-label">Rendimento de carcaça</div>
-                </div>
+              <div id="ma-empty" style="text-align:center;padding:60px 20px;color:var(--cinza-texto);">
+                <div style="font-size:48px;margin-bottom:16px;">📊</div>
+                <h3 style="font-size:16px;margin-bottom:8px;color:var(--cinza-texto);">Nenhum dado disponível</h3>
+                <p style="font-size:13px;">Selecione um animal e execute as análises para visualizar as métricas.</p>
               </div>
 
-              <div class="grid-2 gap-16">
-                <div class="card">
-                  <div class="card-header">
-                    <div><h3>Parâmetros físico-químicos</h3></div>
+              <div id="ma-data" style="display:none;">
+                <div class="grid-4 mb-24">
+                  <div class="kpi-card verde">
+                    <div class="kpi-icon">🏆</div>
+                    <div class="kpi-value" id="ma-score">—</div>
+                    <div class="kpi-label">Pontuação TopMeat</div>
                   </div>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Parâmetro</th>
-                        <th>Valor</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>pH final</td>
-                        <td id="ma-ph">5,65</td>
-                        <td>
-                          <span class="badge badge-verde">✅ Normal</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>CRA (%)</td>
-                        <td id="ma-cra">72,4%</td>
-                        <td><span class="badge badge-verde">✅ Ótimo</span></td>
-                      </tr>
-                      <tr>
-                        <td>Força de Cisalhamento (N)</td>
-                        <td id="ma-fc">32,8 N</td>
-                        <td><span class="badge badge-verde">✅ Macio</span></td>
-                      </tr>
-                      <tr>
-                        <td>Perda por Cocção (%)</td>
-                        <td id="ma-ppc">28,6%</td>
-                        <td>
-                          <span class="badge badge-verde">✅ Normal</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Cor L*</td>
-                        <td id="ma-L">38,5</td>
-                        <td>
-                          <span class="badge badge-verde">✅ Padrão</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Cor a*</td>
-                        <td id="ma-a">15,2</td>
-                        <td>
-                          <span class="badge badge-verde">✅ Padrão</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div class="kpi-card azul">
+                    <div class="kpi-icon">⚖️</div>
+                    <div class="kpi-value" id="ma-peso">—</div>
+                    <div class="kpi-label">Peso da carcaça</div>
+                  </div>
+                  <div class="kpi-card dourado">
+                    <div class="kpi-icon">📐</div>
+                    <div class="kpi-value" id="ma-aol">—</div>
+                    <div class="kpi-label">AOL — Olho de Lombo</div>
+                  </div>
+                  <div class="kpi-card verde">
+                    <div class="kpi-icon">💧</div>
+                    <div class="kpi-value" id="ma-rend">—</div>
+                    <div class="kpi-label">Rendimento de carcaça</div>
+                  </div>
                 </div>
-                <div class="card">
-                  <div class="card-header">
-                    <div>
-                      <h3>Histórico de avaliações</h3>
-                      <p>Animal selecionado</p>
+
+                <div class="grid-2 gap-16">
+                  <div class="card">
+                    <div class="card-header">
+                      <div><h3>Parâmetros físico-químicos</h3></div>
                     </div>
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Parâmetro</th>
+                          <th>Valor</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="ma-fisico-tbody">
+                        <tr><td colspan="3" style="text-align:center;color:var(--cinza-texto);padding:20px;">Nenhum dado disponível. Execute as análises para visualizar as métricas.</td></tr>
+                      </tbody>
+                    </table>
                   </div>
-                  <div class="timeline">
-                    <div class="timeline-item">
-                      <div class="timeline-time">18/06/2025 — 09:14</div>
-                      <div class="timeline-title">
-                        ✅ Avaliação completa — Pontuação 87
-                      </div>
-                      <div class="timeline-desc">
-                        Carcaça classificada como Premium. Destinação: cortes
-                        nobres.
+                  <div class="card">
+                    <div class="card-header">
+                      <div>
+                        <h3>Histórico de avaliações</h3>
+                        <p>Animal selecionado</p>
                       </div>
                     </div>
-                    <div class="timeline-item">
-                      <div class="timeline-time">18/06/2025 — 09:22</div>
-                      <div class="timeline-title">
-                        🧬 Análise físico-química concluída
-                      </div>
-                      <div class="timeline-desc">
-                        Índice de qualidade: 81/100. Prob. premium: 78%.
-                      </div>
-                    </div>
-                    <div class="timeline-item">
-                      <div class="timeline-time">18/06/2025 — 09:30</div>
-                      <div class="timeline-title">
-                        ⚙️ Decisão industrial emitida
-                      </div>
-                      <div class="timeline-desc">
-                        Destinado a cortes premium. Bonificação de R$ 42,00 ao
-                        produtor.
-                      </div>
-                    </div>
-                    <div class="timeline-item pending">
-                      <div class="timeline-time">Pendente</div>
-                      <div class="timeline-title">📄 Relatório comercial</div>
-                      <div class="timeline-desc">
-                        Aguardando aprovação do gestor.
-                      </div>
+                    <div id="ma-timeline" style="text-align:center;padding:40px 20px;color:var(--cinza-texto);">
+                      <p style="font-size:13px;">Nenhuma avaliação registrada. Execute as análises para visualizar o histórico.</p>
                     </div>
                   </div>
                 </div>
@@ -3427,207 +3351,10 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
 
             <!-- ===== MÉTRICAS DE QUALIDADE ===== -->
             <div class="screen" id="screen-metricas-qualidade">
-              <div class="grid-4 mb-24">
-                <div class="kpi-card dourado">
-                  <div class="kpi-icon">⭐</div>
-                  <div class="kpi-value">68%</div>
-                  <div class="kpi-label">Taxa premium do mês</div>
-                  <div class="kpi-delta up">↑ 5% vs mês ant.</div>
-                </div>
-                <div class="kpi-card verde">
-                  <div class="kpi-icon">🎯</div>
-                  <div class="kpi-value">78,4</div>
-                  <div class="kpi-label">Pontuação média geral</div>
-                  <div class="kpi-delta up">↑ 2,1 pts</div>
-                </div>
-                <div class="kpi-card azul">
-                  <div class="kpi-icon">📊</div>
-                  <div class="kpi-value">46,8%</div>
-                  <div class="kpi-label">Rendimento médio</div>
-                  <div class="kpi-delta up">↑ 0,4%</div>
-                </div>
-                <div class="kpi-card alerta">
-                  <div class="kpi-icon">❌</div>
-                  <div class="kpi-value">4,2%</div>
-                  <div class="kpi-label">Taxa de reprovação</div>
-                  <div class="kpi-delta down">↓ 1,1% (melhora)</div>
-                </div>
-              </div>
-
-              <div class="grid-2 gap-16">
-                <div class="card">
-                  <div class="card-header">
-                    <div><h3>Pontuação média por mês</h3></div>
-                  </div>
-                  <div class="bar-chart">
-                    <div class="bar-group">
-                      <div class="bar" style="height: 60%"></div>
-                      <div class="bar-label">Jan</div>
-                    </div>
-                    <div class="bar-group">
-                      <div class="bar" style="height: 65%"></div>
-                      <div class="bar-label">Fev</div>
-                    </div>
-                    <div class="bar-group">
-                      <div class="bar" style="height: 70%"></div>
-                      <div class="bar-label">Mar</div>
-                    </div>
-                    <div class="bar-group">
-                      <div class="bar" style="height: 68%"></div>
-                      <div class="bar-label">Abr</div>
-                    </div>
-                    <div class="bar-group">
-                      <div class="bar" style="height: 74%"></div>
-                      <div class="bar-label">Mai</div>
-                    </div>
-                    <div class="bar-group">
-                      <div class="bar" style="height: 78%"></div>
-                      <div class="bar-label">Jun</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="card">
-                  <div class="card-header">
-                    <div><h3>Distribuição de classificação</h3></div>
-                  </div>
-                  <div style="display: flex; flex-direction: column; gap: 12px">
-                    <div>
-                      <div class="flex-between" style="margin-bottom: 6px">
-                        <span style="font-size: 13px; font-weight: 600"
-                          >⭐ Premium</span
-                        >
-                        <strong style="color: var(--dourado)">68%</strong>
-                      </div>
-                      <div class="progress-bar-wrap">
-                        <div
-                          class="progress-bar-fill dourado"
-                          style="width: 68%"
-                        ></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex-between" style="margin-bottom: 6px">
-                        <span style="font-size: 13px; font-weight: 600"
-                          >✅ Aprovado</span
-                        >
-                        <strong style="color: var(--verde-principal)"
-                          >22%</strong
-                        >
-                      </div>
-                      <div class="progress-bar-wrap">
-                        <div class="progress-bar-fill" style="width: 22%"></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex-between" style="margin-bottom: 6px">
-                        <span style="font-size: 13px; font-weight: 600"
-                          >⚠️ Atenção</span
-                        >
-                        <strong style="color: var(--alerta)">6%</strong>
-                      </div>
-                      <div
-                        class="progress-bar-wrap"
-                        style="
-                          height: 8px;
-                          background: var(--cinza-medio);
-                          border-radius: 20px;
-                          margin-top: 6px;
-                        "
-                      >
-                        <div
-                          style="
-                            width: 6%;
-                            height: 100%;
-                            background: var(--alerta);
-                            border-radius: 20px;
-                          "
-                        ></div>
-                      </div>
-                    </div>
-                    <div>
-                      <div class="flex-between" style="margin-bottom: 6px">
-                        <span style="font-size: 13px; font-weight: 600"
-                          >❌ Reprovado</span
-                        >
-                        <strong style="color: var(--erro)">4%</strong>
-                      </div>
-                      <div
-                        class="progress-bar-wrap"
-                        style="
-                          height: 8px;
-                          background: var(--cinza-medio);
-                          border-radius: 20px;
-                          margin-top: 6px;
-                        "
-                      >
-                        <div
-                          style="
-                            width: 4%;
-                            height: 100%;
-                            background: var(--erro);
-                            border-radius: 20px;
-                          "
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card mt-16">
-                <div class="card-header">
-                  <div><h3>Ranking de produtores — Qualidade média</h3></div>
-                </div>
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Posição</th>
-                      <th>Produtor / Fazenda</th>
-                      <th>Animais</th>
-                      <th>Pontuação Média</th>
-                      <th>% Premium</th>
-                      <th>Bonificação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <strong style="color: var(--dourado)">🥇 1°</strong>
-                      </td>
-                      <td><strong>Fazenda Santa Clara</strong></td>
-                      <td>124</td>
-                      <td>
-                        <strong style="color: var(--verde-principal)"
-                          >84,2</strong
-                        >
-                      </td>
-                      <td>74%</td>
-                      <td><span class="badge badge-dourado">R$ 1.848</span></td>
-                    </tr>
-                    <tr>
-                      <td><strong style="color: #9ca3af">🥈 2°</strong></td>
-                      <td>Sítio Boa Vista</td>
-                      <td>87</td>
-                      <td>
-                        <strong style="color: var(--verde-principal)"
-                          >76,8</strong
-                        >
-                      </td>
-                      <td>61%</td>
-                      <td><span class="badge badge-verde">R$ 1.044</span></td>
-                    </tr>
-                    <tr>
-                      <td><strong style="color: #d97706">🥉 3°</strong></td>
-                      <td>Fazenda Três Rios</td>
-                      <td>73</td>
-                      <td>
-                        <strong style="color: var(--alerta)">68,1</strong>
-                      </td>
-                      <td>52%</td>
-                      <td><span class="badge badge-verde">R$ 702</span></td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div style="text-align:center;padding:80px 20px;color:var(--cinza-texto);">
+                <div style="font-size:48px;margin-bottom:16px;">📈</div>
+                <h3 style="font-size:16px;margin-bottom:8px;color:var(--cinza-texto);">Nenhum dado disponível</h3>
+                <p style="font-size:13px;">Execute as análises para visualizar as métricas de qualidade.</p>
               </div>
             </div>
 
@@ -3717,64 +3444,9 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
                 <div class="card-header">
                   <div><h3>Histórico de relatórios gerados</h3></div>
                 </div>
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th>Relatório</th>
-                      <th>Período</th>
-                      <th>Gerado por</th>
-                      <th>Data</th>
-                      <th>Ação</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><strong>Relatório Mensal — Maio 2025</strong></td>
-                      <td>01/05 a 31/05/2025</td>
-                      <td>Cris Leal</td>
-                      <td>02/06/2025</td>
-                      <td>
-                        <button
-                          class="btn-secondary"
-                          style="padding: 6px 12px; font-size: 11px"
-                          onclick="showToast('Abrindo...')"
-                        >
-                          📥 Baixar
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><strong>Lote 045 — Análise completa</strong></td>
-                      <td>Lote 045 — 14/06/2025</td>
-                      <td>Dr. João Silva</td>
-                      <td>14/06/2025</td>
-                      <td>
-                        <button
-                          class="btn-secondary"
-                          style="padding: 6px 12px; font-size: 11px"
-                          onclick="showToast('Abrindo...')"
-                        >
-                          📥 Baixar
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><strong>Bonificações — Maio 2025</strong></td>
-                      <td>01/05 a 31/05/2025</td>
-                      <td>Cris Leal</td>
-                      <td>01/06/2025</td>
-                      <td>
-                        <button
-                          class="btn-secondary"
-                          style="padding: 6px 12px; font-size: 11px"
-                          onclick="showToast('Abrindo...')"
-                        >
-                          📥 Baixar
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div style="text-align:center;padding:40px 20px;color:var(--cinza-texto);">
+                  <p style="font-size:13px;">Nenhum relatório gerado ainda. Execute as análises para gerar relatórios.</p>
+                </div>
               </div>
             </div>
 
@@ -4173,7 +3845,7 @@ Animais terminados em confinamento, dieta de 90 dias. Sem ocorrências veteriná
         <div class="form-row cols-2" style="margin-bottom: 14px">
           <div class="form-group" style="margin-bottom: 0">
             <label>Fazenda / Proprietário</label
-            ><input type="text" id="animal-fazenda" placeholder="Nome da fazenda ou proprietário" />
+            ><select id="animal-fazenda"><option value="">Carregando fazendas...</option></select>
           </div>
           <div class="form-group" style="margin-bottom: 0">
             <label>Data de nascimento</label><input type="date" id="animal-nasc" />
@@ -6055,6 +5727,7 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
           }
           state.animaisData = {};
           data.forEach(a => state.animaisData[a.id] = a);
+          populateAnimalSelect();
           tbody.innerHTML = data.map(a => {
             const dt = a.data_nascimento ? new Date(a.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR") : "—";
             const numEsc = (a.numero || "").replace(/'/g, "\\'");
@@ -6083,10 +5756,11 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         document.getElementById("animal-modal-title").textContent = "🐑 Novo Animal";
         document.getElementById("animal-modal-sub").textContent = "Cadastre um novo animal para avaliação";
         document.getElementById("animal-save-btn").textContent = "Cadastrar e Avaliar";
-        ["animal-num","animal-brinco","animal-raca","animal-fazenda","animal-nasc"]
+        ["animal-num","animal-brinco","animal-raca","animal-nasc"]
           .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
         document.getElementById("animal-especie").value = "Ovino";
         document.getElementById("animal-sexo").value = "Macho";
+        carregarFazendasNoModal("");
         openModal("modal-add-animal");
       }
 
@@ -6102,8 +5776,8 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         document.getElementById("animal-especie").value = a.especie || "Ovino";
         document.getElementById("animal-raca").value = a.raca || "";
         document.getElementById("animal-sexo").value = a.sexo || "Macho";
-        document.getElementById("animal-fazenda").value = a.proprietario || "";
         document.getElementById("animal-nasc").value = a.data_nascimento || "";
+        carregarFazendasNoModal(a.proprietario || "");
         openModal("modal-add-animal");
       }
 
@@ -6141,16 +5815,87 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             const { error } = await sb.from("animais").update(payload).eq("id", animalId);
             if (error) throw error;
             showToast("✅ Animal atualizado!");
+            closeModal("modal-add-animal");
+            loadAnimals();
           } else {
             const { error } = await sb.from("animais").insert(payload);
             if (error) throw error;
-            showToast("✅ Animal cadastrado! Agora faça a avaliação.");
+            showToast("✅ Animal cadastrado! Abrindo avaliação...");
+            closeModal("modal-add-animal");
+            loadAnimals();
+            preencherTopMeatMetrics(payload);
+            showScreen("agente1");
           }
-          closeModal("modal-add-animal");
-          loadAnimals();
         } catch (e) {
           showToast("❌ Erro ao salvar: " + e.message);
         }
+      }
+
+      // ========== FAZENDAS NO MODAL ==========
+      async function carregarFazendasNoModal(valorAtual) {
+        const sel = document.getElementById("animal-fazenda");
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Selecione a fazenda...</option>';
+        try {
+          const { data, error } = await sb
+            .from("fazendas")
+            .select("id, nome")
+            .eq("empresa_id", state.empresaId)
+            .order("nome", { ascending: true });
+          if (error) throw error;
+          if (data && data.length > 0) {
+            data.forEach(f => {
+              const opt = document.createElement("option");
+              opt.value = f.nome;
+              opt.textContent = f.nome;
+              if (f.nome === valorAtual) opt.selected = true;
+              sel.appendChild(opt);
+            });
+          } else {
+            sel.innerHTML = '<option value="">Nenhuma fazenda cadastrada</option>';
+          }
+        } catch (e) {
+          sel.innerHTML = '<option value="">Erro ao carregar fazendas</option>';
+        }
+      }
+
+      // ========== MÉTRICAS POR ANIMAL ==========
+      function populateAnimalSelect() {
+        const sel = document.getElementById("animal-select");
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Selecione um animal...</option>';
+        if (state.animaisData) {
+          Object.values(state.animaisData).forEach(a => {
+            const opt = document.createElement("option");
+            opt.value = a.id;
+            const dt = a.data_nascimento
+              ? new Date(a.data_nascimento + "T00:00:00").toLocaleDateString("pt-BR")
+              : "";
+            opt.textContent = (a.numero || "—") + (a.raca ? " — " + a.raca : "") + (dt ? " — " + dt : "");
+            sel.appendChild(opt);
+          });
+        }
+        document.getElementById("ma-empty").style.display = "";
+        document.getElementById("ma-data").style.display = "none";
+      }
+
+      function loadAnimalMetrics() {
+        document.getElementById("ma-empty").style.display = "";
+        document.getElementById("ma-data").style.display = "none";
+      }
+
+      // ========== PRÉ-PREENCHER TOPMEAT METRICS ==========
+      function preencherTopMeatMetrics(payload) {
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ""; };
+        set("a1-num",    payload.numero);
+        set("a1-brinco", payload.brinco);
+        set("a1-especie",payload.especie);
+        set("a1-raca",   payload.raca);
+        set("a1-sexo",   payload.sexo);
+        set("a1-prop",   payload.proprietario);
+        set("a1-nasc",   payload.data_nascimento || "");
+        const firstTab = document.querySelector("#screen-agente1 .tabs .tab");
+        if (firstTab) firstTab.click();
       }
 
       // ========== INIT ==========
