@@ -2170,10 +2170,7 @@
                       </div>
                       <div class="form-group" style="margin-bottom: 0">
                         <label>Avaliador</label
-                        ><input
-                          type="text"
-                          id="a1-aval" placeholder="Nome do técnico"
-                        />
+                        ><select id="a1-aval"><option value="">Selecione o avaliador...</option></select>
                       </div>
                     </div>
                     <div class="form-row cols-2" style="margin-bottom: 0">
@@ -4238,16 +4235,23 @@
             lista.innerHTML = '<div class="empty-state"><div class="empty-icon">🏢</div><h4>Nenhuma empresa cadastrada</h4><p>Clique em "+ Nova Empresa" para começar.</p></div>';
             return;
           }
-          lista.innerHTML = data.map(e => `
-            <div class="card" style="cursor:pointer;margin-bottom:10px;" onclick="selecionarEmpresa('${e.id}')">
+          lista.innerHTML = data.map(e => {
+            const razaoEsc = (e.razao_social || "").replace(/'/g, "\\'");
+            return `
+            <div class="card" style="margin-bottom:10px;">
               <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-                <div>
+                <div style="cursor:pointer;flex:1;" onclick="selecionarEmpresa('${e.id}')">
                   <strong style="font-size:15px;">${e.razao_social}</strong>
                   <div style="font-size:12px;color:var(--cinza-texto);margin-top:4px;">${[e.cidade, e.cnpj].filter(Boolean).join(' · ')}</div>
                 </div>
-                <span style="color:var(--verde-principal);font-size:13px;white-space:nowrap;">Ver detalhes →</span>
+                <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
+                  <span style="color:var(--verde-principal);font-size:13px;cursor:pointer;" onclick="selecionarEmpresa('${e.id}')">Ver detalhes →</span>
+                  <button class="btn-outline" style="padding:5px 10px;font-size:11px;color:var(--erro);border-color:var(--erro);"
+                    onclick="deleteEmpresa('${e.id}','${razaoEsc}')">Excluir</button>
+                </div>
               </div>
-            </div>`).join("");
+            </div>`;
+          }).join("");
         } catch(e) {
           lista.innerHTML = `<p style="color:var(--erro);padding:20px 0;">Erro ao carregar empresas.</p>`;
         }
@@ -5439,8 +5443,12 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
               </div></td>
               <td data-label="Função:">${u.cargo || "—"}</td>
               <td data-label="E-mail:">${u.email || "—"}</td>
-              <td class="td-actions">${nivel} ${status} <button class="btn-secondary" style="padding:5px 10px;font-size:11px;margin-left:auto;"
-                onclick="editColab('${u.id}','${nomeEsc}','${cargoEsc}','${u.nivel_acesso || "leitura"}','${u.status || "ativo"}')">Editar</button></td>
+              <td class="td-actions">${nivel} ${status}
+                <button class="btn-secondary" style="padding:5px 10px;font-size:11px;margin-left:4px;"
+                  onclick="editColab('${u.id}','${nomeEsc}','${cargoEsc}','${u.nivel_acesso || "leitura"}','${u.status || "ativo"}')">Editar</button>
+                <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px;color:var(--erro);border-color:var(--erro);"
+                  onclick="deleteColab('${u.id}','${nomeEsc}')">Excluir</button>
+              </td>
             </tr>`;
           }).join("");
         } catch (e) {
@@ -5559,8 +5567,12 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
               <td data-label="Local:">${local}</td>
               <td data-label="Espécies:">${esp}</td>
               <td data-label="Animais:">${f.qtd_animais ?? "—"}</td>
-              <td class="td-actions"><button class="btn-secondary" style="padding:5px 10px;font-size:11px;"
-                onclick="editFazenda('${f.id}','${nEsc}','${pEsc}','${mEsc}','${f.uf || ""}','${f.telefone || ""}')">Editar</button></td>
+              <td class="td-actions">
+                <button class="btn-secondary" style="padding:5px 10px;font-size:11px;"
+                  onclick="editFazenda('${f.id}','${nEsc}','${pEsc}','${mEsc}','${f.uf || ""}','${f.telefone || ""}')">Editar</button>
+                <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px;color:var(--erro);border-color:var(--erro);"
+                  onclick="deleteFazenda('${f.id}','${nEsc}')">Excluir</button>
+              </td>
             </tr>`;
           }).join("");
         } catch (e) {
@@ -5664,7 +5676,7 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
               <td><span class="badge">⏳ Pendente</span></td>
               <td class="text-muted">${dt}</td>
               <td style="white-space:nowrap">
-                <button class="btn-secondary" style="padding:5px 10px;font-size:11px" onclick="showScreen('agente1')">Analisar</button>
+                <button class="btn-secondary" style="padding:5px 10px;font-size:11px" onclick="analisarAnimal('${a.id}')">Analisar</button>
                 <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px" onclick="editAnimal('${a.id}')">Editar</button>
                 <button class="btn-outline" style="padding:5px 10px;font-size:11px;margin-left:4px;color:var(--erro);border-color:var(--erro)" onclick="deleteAnimal('${a.id}','${numEsc}')">Excluir</button>
               </td>
@@ -5827,13 +5839,97 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         document.getElementById("dash-especies").innerHTML = especiesHtml || '<div style="text-align:center;padding:20px;color:var(--cinza-texto);">Sem dados por espécie.</div>';
       }
 
-      // ========== AVALIADOR AUTOMÁTICO ==========
-      function preencherAvaliador() {
-        const avalEl = document.getElementById("a1-aval");
-        if (avalEl && !avalEl.value) {
-          const nome = document.querySelector(".user-info strong")?.textContent || "";
-          if (nome) avalEl.value = nome;
+      // ========== EXCLUIR EMPRESA ==========
+      async function deleteEmpresa(id, nome) {
+        if (!confirm(`Excluir a empresa "${nome}"?\nEsta ação não pode ser desfeita.`)) return;
+        try {
+          const { error } = await sb.from("empresas").delete().eq("id", id);
+          if (error) throw error;
+          if (state.empresaId === id) state.empresaId = null;
+          showToast("✅ Empresa excluída.");
+          carregarEmpresas();
+        } catch (e) {
+          showToast("❌ Erro ao excluir empresa: " + e.message);
         }
+      }
+
+      // ========== EXCLUIR COLABORADOR ==========
+      async function deleteColab(id, nome) {
+        if (!confirm(`Excluir o colaborador "${nome}"?\nEsta ação não pode ser desfeita.`)) return;
+        try {
+          const { error } = await sb.from("usuarios").delete().eq("id", id);
+          if (error) throw error;
+          showToast("✅ Colaborador excluído.");
+          loadColabs();
+        } catch (e) {
+          showToast("❌ Erro ao excluir colaborador: " + e.message);
+        }
+      }
+
+      // ========== EXCLUIR FAZENDA ==========
+      async function deleteFazenda(id, nome) {
+        if (!confirm(`Excluir a fazenda "${nome}"?\nEsta ação não pode ser desfeita.`)) return;
+        try {
+          const { error } = await sb.from("fazendas").delete().eq("id", id);
+          if (error) throw error;
+          showToast("✅ Fazenda excluída.");
+          loadFazendas();
+        } catch (e) {
+          showToast("❌ Erro ao excluir fazenda: " + e.message);
+        }
+      }
+
+      // ========== ANALISAR ANIMAL (pré-preenche agente 1) ==========
+      function analisarAnimal(id) {
+        const a = state.animaisData && state.animaisData[id];
+        if (a) {
+          preencherTopMeatMetrics({
+            numero:          a.numero,
+            brinco:          a.brinco,
+            especie:         a.especie,
+            raca:            a.raca,
+            sexo:            a.sexo,
+            proprietario:    a.proprietario,
+            data_nascimento: a.data_nascimento,
+          });
+        }
+        showScreen("agente1");
+      }
+
+      // ========== AVALIADOR — SELECT COM COLABORADORES ==========
+      async function carregarAvaliadores(valorAtual) {
+        const sel = document.getElementById("a1-aval");
+        if (!sel || sel.tagName !== "SELECT") return;
+        sel.innerHTML = '<option value="">Selecione o avaliador...</option>';
+        if (!state.empresaId) return;
+        try {
+          const { data } = await sb
+            .from("usuarios")
+            .select("id, nome, cargo")
+            .eq("empresa_id", state.empresaId)
+            .order("nome");
+          if (data && data.length > 0) {
+            data.forEach(u => {
+              if (!u.nome) return;
+              const opt = document.createElement("option");
+              opt.value = u.nome;
+              opt.textContent = u.nome + (u.cargo ? " — " + u.cargo : "");
+              if (u.nome === valorAtual) opt.selected = true;
+              sel.appendChild(opt);
+            });
+            if (!valorAtual) {
+              const nomeLogado = document.querySelector(".user-info strong")?.textContent || "";
+              const match = [...sel.options].find(o => o.value === nomeLogado);
+              if (match) match.selected = true;
+            }
+          }
+        } catch (e) {
+          console.warn("Erro ao carregar avaliadores:", e.message);
+        }
+      }
+
+      function preencherAvaliador() {
+        carregarAvaliadores("");
       }
 
       // ========== MÉTRICAS ANIMAIS ==========
@@ -5995,7 +6091,7 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         set("a1-prop",   payload.proprietario);
         set("a1-nasc",   payload.data_nascimento || "");
         const nomeLogado = document.querySelector(".user-info strong")?.textContent || "";
-        set("a1-aval", nomeLogado);
+        carregarAvaliadores(nomeLogado);
         const firstTab = document.querySelector("#screen-agente1 .tabs .tab");
         if (firstTab) firstTab.click();
       }
