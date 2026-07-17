@@ -1826,10 +1826,11 @@
                         <th>Espécie</th>
                         <th>Pontuação</th>
                         <th>Status</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody id="recent-table">
-                      <tr><td colspan="4" style="text-align:center;color:var(--cinza-texto);padding:30px;">Nenhuma análise concluída ainda. Execute os agentes para ver resultados aqui.</td></tr>
+                      <tr><td colspan="5" style="text-align:center;color:var(--cinza-texto);padding:30px;">Nenhuma análise concluída ainda. Execute os agentes para ver resultados aqui.</td></tr>
                     </tbody>
                   </table>
                 </div>
@@ -3067,10 +3068,7 @@
                   <div class="form-section-title">Critério do produtor</div>
                   <div class="form-group">
                     <label>Produtor / Proprietário</label>
-                    <input
-                      type="text"
-                      id="a3-prod" placeholder="Nome do produtor"
-                    />
+                    <select id="a3-prod"><option value="">Selecione o produtor...</option></select>
                   </div>
                   <div class="form-group">
                     <label>Observação adicional</label>
@@ -3957,6 +3955,19 @@
       </div>
     </div>
 
+    <!-- MODAL VER RELATÓRIO -->
+    <div class="modal-overlay" id="modal-relatorio-ver" style="z-index:300">
+      <div class="modal" style="max-width:720px;max-height:85vh;overflow-y:auto;">
+        <button class="modal-close" onclick="closeModal('modal-relatorio-ver')">✕</button>
+        <h3>📋 Relatório de Análise</h3>
+        <div id="modal-relatorio-conteudo" style="font-size:13px;line-height:1.7;margin-top:12px;"></div>
+        <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap;">
+          <button class="btn-secondary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button>
+          <button class="btn-secondary" onclick="closeModal('modal-relatorio-ver')">Fechar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- TOAST -->
     <div
       id="toast"
@@ -4460,7 +4471,7 @@
         document.getElementById("notif-panel").classList.remove("open");
         if (name === "dashboard") atualizarPainel();
         if (name === "agente1") preencherAvaliador();
-        if (name === "agente3") atualizarConsolidadoAgente3();
+        if (name === "agente3") { atualizarConsolidadoAgente3(); carregarProdutoresAgente3(); }
         if (name === "cadastro") carregarEmpresas();
         if (name === "animais" && state.empresaId) loadAnimals();
         if (name === "metricas-animal") atualizarMetricasAnimal();
@@ -5775,7 +5786,7 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
           set("dash-animais", "—"); set("dash-premium", "—"); set("dash-peso", "—"); set("dash-score", "—");
           set("dash-total", "0"); set("dash-max", "—"); set("dash-rend", "—");
           document.getElementById("recent-table").innerHTML =
-            '<tr><td colspan="4" style="text-align:center;color:var(--cinza-texto);padding:30px;">Nenhuma análise concluída ainda.</td></tr>';
+            '<tr><td colspan="5" style="text-align:center;color:var(--cinza-texto);padding:30px;">Nenhuma análise concluída ainda.</td></tr>';
           document.getElementById("dash-especies").innerHTML =
             '<div style="text-align:center;padding:40px 20px;color:var(--cinza-texto);"><p style="font-size:13px;">Nenhum dado disponível. Execute as análises para ver as métricas por espécie.</p></div>';
           return;
@@ -5814,6 +5825,10 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             <td>${espEmoji[a.especie] || "🐾"} ${a.especie || "—"}</td>
             <td><strong style="color:${getScoreColor(a.score)}">${a.score || "—"}</strong></td>
             <td>${getStatus(a.score, a.prob)}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn-secondary" style="padding:4px 8px;font-size:11px;margin-right:4px" onclick="verRelatorio(${a.id})">📋</button>
+              <button class="btn-secondary" style="padding:4px 8px;font-size:11px;color:var(--erro)" onclick="excluirAnalise(${a.id})">🗑️</button>
+            </td>
           </tr>`
         ).join("");
 
@@ -5994,8 +6009,15 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
 
       // ========== RELATÓRIO AUTOMÁTICO ==========
       function registrarRelatorioAutomatico(d1, d2, destino) {
+        const analiseId = Date.now();
+        const dataStr = new Date().toLocaleDateString("pt-BR");
+        const avaliador = document.getElementById("a1-aval")?.value ||
+                          document.querySelector(".user-info strong")?.textContent || "—";
+        const iaTexto = document.getElementById("ag3-response-text")?.innerText || "";
+
         if (d1) {
           state.dashboardData.avaliacoes.push({
+            id:      analiseId,
             num:     d1.num     || "—",
             especie: d1.especie || "—",
             score:   d1.score   || 0,
@@ -6003,19 +6025,26 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
             peso:    d1.pcq     || null,
             rend:    d1.rcf     || null,
             destino: destino    || "—",
+            avaliador: avaliador,
+            data:    dataStr,
+            d1:      d1,
+            d2:      d2,
+            iaTexto: iaTexto,
           });
           atualizarPainel();
         }
+
         const lista = document.getElementById("relatorios-historico");
         if (!lista) return;
-        const dataStr = new Date().toLocaleDateString("pt-BR");
-        const avaliador = d1?.avaliador || document.querySelector(".user-info strong")?.textContent || "—";
-        const nomeLinha = `<tr>
+        const nomeLinha = `<tr data-analise-id="${analiseId}">
           <td><strong>Análise — ${d1?.num || "Animal"}</strong></td>
           <td>${dataStr}</td>
           <td>${avaliador}</td>
           <td>${dataStr}</td>
-          <td><button class="btn-secondary" style="padding:6px 12px;font-size:11px" onclick="showToast('Exportação em desenvolvimento')">📋 Ver</button></td>
+          <td style="white-space:nowrap;display:flex;gap:6px;align-items:center;">
+            <button class="btn-secondary" style="padding:5px 10px;font-size:11px" onclick="verRelatorio(${analiseId})">📋 Ver</button>
+            <button class="btn-secondary" style="padding:5px 10px;font-size:11px;color:var(--erro)" onclick="excluirAnalise(${analiseId})">🗑️</button>
+          </td>
         </tr>`;
         if (lista.querySelector("tr td[colspan]")) lista.innerHTML = "";
         lista.insertAdjacentHTML("afterbegin", nomeLinha);
@@ -6025,6 +6054,96 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
           badge.textContent = count;
           badge.style.display = "";
         }
+      }
+
+      function verRelatorio(analiseId) {
+        const av = state.dashboardData.avaliacoes.find(a => a.id === analiseId);
+        if (!av) { showToast("Análise não encontrada."); return; }
+        const d1 = av.d1 || {};
+        const d2 = av.d2 || {};
+        const espEmoji = { Ovino: "🐑", Caprino: "🐐", Bovino: "🐄" };
+        const html = `
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+              <div><strong>Animal:</strong> ${av.num}</div>
+              <div><strong>Espécie:</strong> ${espEmoji[av.especie]||"🐾"} ${av.especie}</div>
+              <div><strong>Avaliador:</strong> ${av.avaliador}</div>
+              <div><strong>Data:</strong> ${av.data}</div>
+              <div><strong>Destinação:</strong> ${av.destino}</div>
+              <div><strong>Score:</strong> ${av.score}/100</div>
+            </div>
+          </div>
+          ${d1.score !== undefined ? `
+          <h5 style="margin:0 0 8px;font-size:13px;">📊 TopMeat Metrics (Agente 01)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
+              <div><strong>Score:</strong> ${d1.score}/100</div>
+              <div><strong>Peso vivo:</strong> ${d1.peso||"—"} kg</div>
+              <div><strong>PCQ:</strong> ${d1.pcq||"—"} kg</div>
+              <div><strong>AOL:</strong> ${d1.aol||"—"} cm²</div>
+              <div><strong>EGS:</strong> ${d1.egs||"—"} mm</div>
+              <div><strong>pH final:</strong> ${d1.ph2||"—"}</div>
+              <div><strong>Rend. quente:</strong> ${d1.rcq||"—"}%</div>
+              <div><strong>Rend. fria:</strong> ${d1.rcf||"—"}%</div>
+              <div><strong>Perda resfr.:</strong> ${d1.perdares||"—"}%</div>
+            </div>
+          </div>` : ""}
+          ${d2.score !== undefined ? `
+          <h5 style="margin:0 0 8px;font-size:13px;">🔬 TopMeat Carcass (Agente 02)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
+              <div><strong>Índice:</strong> ${d2.score}/100</div>
+              <div><strong>% Premium:</strong> ${d2.prob||"—"}%</div>
+              <div><strong>Maciez (FC):</strong> ${d2.fc||"—"} N</div>
+              <div><strong>CRA:</strong> ${d2.cra||"—"}%</div>
+              <div><strong>PPC:</strong> ${d2.ppc||"—"}%</div>
+              <div><strong>Cor L*:</strong> ${d2.L||"—"}</div>
+              <div><strong>Proteína:</strong> ${d2.prot||"—"}%</div>
+              <div><strong>Lipídios:</strong> ${d2.lip||"—"}%</div>
+            </div>
+          </div>` : ""}
+          ${av.iaTexto ? `
+          <h5 style="margin:0 0 8px;font-size:13px;">🤖 Análise TopMeat Quality (IA)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;font-size:12px;white-space:pre-wrap;max-height:260px;overflow-y:auto;">${av.iaTexto}</div>` : ""}`;
+        document.getElementById("modal-relatorio-conteudo").innerHTML = html;
+        openModal("modal-relatorio-ver");
+      }
+
+      function imprimirRelatorio() {
+        const conteudo = document.getElementById("modal-relatorio-conteudo").innerHTML;
+        const janela = window.open("", "_blank", "width=800,height=600");
+        janela.document.write(`<!DOCTYPE html><html><head><title>Relatório TopMeat</title>
+          <style>body{font-family:Arial,sans-serif;font-size:13px;line-height:1.7;padding:24px;color:#111;}
+          h3{color:#2d7d46;}h5{margin:14px 0 6px;}strong{font-weight:600;}
+          div[style*="background"]{background:#f5f5f5;border-radius:8px;padding:12px;margin-bottom:12px;}
+          div[style*="grid"]{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;}
+          @media print{body{padding:0;}button{display:none!important;}}</style></head>
+          <body><h3>📋 Relatório de Análise — TopMeat</h3>${conteudo}
+          <p style="margin-top:24px;font-size:11px;color:#666;">Gerado em ${new Date().toLocaleString("pt-BR")}</p>
+          <script>window.onload=()=>{window.print();}<\/script></body></html>`);
+        janela.document.close();
+      }
+
+      function excluirAnalise(analiseId) {
+        if (!confirm("Excluir esta análise? Esta ação não pode ser desfeita.")) return;
+        const idx = state.dashboardData.avaliacoes.findIndex(a => a.id === analiseId);
+        if (idx !== -1) state.dashboardData.avaliacoes.splice(idx, 1);
+        const row = document.querySelector(`[data-analise-id="${analiseId}"]`);
+        if (row) row.remove();
+        const lista = document.getElementById("relatorios-historico");
+        if (lista) {
+          const remaining = lista.querySelectorAll("tr").length;
+          if (remaining === 0) {
+            lista.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--cinza-texto);padding:30px;">Nenhum relatório gerado ainda.</td></tr>';
+            const badge = document.getElementById("nav-badge-relatorios");
+            if (badge) badge.style.display = "none";
+          } else {
+            const badge = document.getElementById("nav-badge-relatorios");
+            if (badge) badge.textContent = remaining;
+          }
+        }
+        atualizarPainel();
+        showToast("✅ Análise excluída.");
       }
 
       // ========== FAZENDAS NO MODAL ==========
@@ -6052,6 +6171,36 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
           }
         } catch (e) {
           sel.innerHTML = '<option value="">Erro ao carregar fazendas</option>';
+        }
+      }
+
+      // ========== PRODUTORES NO AGENTE 3 ==========
+      async function carregarProdutoresAgente3(valorAtual) {
+        const sel = document.getElementById("a3-prod");
+        if (!sel || sel.tagName !== "SELECT") return;
+        sel.innerHTML = '<option value="">Selecione o produtor...</option>';
+        if (!state.empresaId) return;
+        try {
+          const { data, error } = await sb
+            .from("fazendas")
+            .select("id, nome, proprietario")
+            .eq("empresa_id", state.empresaId)
+            .order("nome", { ascending: true });
+          if (error) throw error;
+          if (data && data.length > 0) {
+            data.forEach(f => {
+              const opt = document.createElement("option");
+              const label = f.proprietario ? `${f.nome} — ${f.proprietario}` : f.nome;
+              opt.value = f.proprietario || f.nome;
+              opt.textContent = label;
+              if (opt.value === valorAtual || f.nome === valorAtual) opt.selected = true;
+              sel.appendChild(opt);
+            });
+          } else {
+            sel.innerHTML = '<option value="">Nenhuma fazenda cadastrada</option>';
+          }
+        } catch (e) {
+          sel.innerHTML = '<option value="">Erro ao carregar produtores</option>';
         }
       }
 
