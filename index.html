@@ -312,6 +312,13 @@
         background: var(--verde-principal);
         color: var(--branco);
       }
+      .btn-secondary:disabled,
+      .btn-secondary:disabled:hover {
+        background: #e5e7eb;
+        color: #9ca3af;
+        border-color: #d1d5db;
+        cursor: not-allowed;
+      }
 
       .btn-outline {
         padding: 10px 20px;
@@ -2502,8 +2509,10 @@
                   <button
                     class="btn-secondary"
                     id="btn-relatorio-ag1"
-                    style="display: none; width: 100%; margin-bottom: 16px"
+                    disabled
+                    style="width: 100%; margin-bottom: 16px;"
                     onclick="abrirRelatorioAgente1()"
+                    title="Execute 'Analisar com IA' para liberar o relatório individual"
                   >
                     📋 Ver Relatório Individual
                   </button>
@@ -2794,8 +2803,10 @@
                   <button
                     class="btn-secondary"
                     id="btn-relatorio-ag2"
-                    style="display: none; width: 100%; margin-bottom: 16px"
+                    disabled
+                    style="width: 100%; margin-bottom: 16px;"
                     onclick="abrirRelatorioAgente2()"
+                    title="Execute 'Prever Qualidade' para liberar o relatório individual"
                   >
                     📋 Ver Relatório Individual
                   </button>
@@ -2975,8 +2986,10 @@
                   <button
                     class="btn-secondary"
                     id="btn-relatorio-ag3"
-                    style="display: none; width: 100%; margin-bottom: 16px"
+                    disabled
+                    style="width: 100%; margin-bottom: 16px;"
                     onclick="abrirRelatorioAgente3()"
+                    title="Execute o Motor de Decisão (com Agente 01 e 02 concluídos) para liberar o relatório completo"
                   >
                     📋 Ver Relatório Completo
                   </button>
@@ -4378,6 +4391,19 @@
       function closeModal(id) {
         document.getElementById(id).classList.remove("open");
       }
+
+      function habilitarBotaoRelatorio(id) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = false;
+        btn.title = "";
+      }
+      function desabilitarBotaoRelatorio(id, motivo) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = true;
+        btn.title = motivo || "";
+      }
       document.querySelectorAll(".modal-overlay").forEach((overlay) => {
         overlay.addEventListener("click", (e) => {
           if (e.target === overlay) overlay.classList.remove("open");
@@ -4737,7 +4763,7 @@ Responda em português brasileiro, técnico e direto. Inicie com "SCORE: XX/100"
           animateScore(score);
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           state.agent1Data = { ...d, score };
-          document.getElementById("btn-relatorio-ag1").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag1");
           await salvarAgente1NoBanco(d, score, text);
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
@@ -4752,7 +4778,7 @@ Responda em português brasileiro, técnico e direto. Inicie com "SCORE: XX/100"
             (e.message || "erro") +
             ")</span>";
           state.agent1Data = { ...d, score };
-          document.getElementById("btn-relatorio-ag1").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag1");
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
         }
@@ -4829,7 +4855,7 @@ Carcaça classificada. Pontuação técnica: ${score}/100. Dados completos (biom
         const arc = document.getElementById("score-arc");
         if (arc) arc.style.strokeDasharray = "0 220";
         state.agent1Data = null;
-        document.getElementById("btn-relatorio-ag1").style.display = "none";
+        desabilitarBotaoRelatorio("btn-relatorio-ag1", "Execute 'Analisar com IA' para liberar o relatório individual");
         atualizarConsolidadoAgente3();
       }
 
@@ -4854,9 +4880,11 @@ Carcaça classificada. Pontuação técnica: ${score}/100. Dados completos (biom
       }
 
       async function salvarAgente2NoBanco(d, score, prob, respostaIA) {
-        if (!state.empresaId || !state.agent1Data) return;
+        if (!state.empresaId) return;
         try {
-          const animalId = await ensureAnimalRecord(state.agent1Data);
+          // Sem o Agente 01, cria um registro de animal avulso só para vincular esta avaliação.
+          const animalRef = state.agent1Data || { num: `AGENTE2-${Date.now()}` };
+          const animalId = await ensureAnimalRecord(animalRef);
           if (!animalId) return;
           await sb.from("avaliacoes_agente2").insert({
             animal_id: animalId,
@@ -4924,7 +4952,7 @@ Inicie com "ÍNDICE: XX/100" e "PREMIUM: XX%" nas primeiras linhas. Responda em 
           document.getElementById("a2-prob").textContent = prob + "%";
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           state.agent2Data = { ...d, score, prob };
-          document.getElementById("btn-relatorio-ag2").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag2");
           await salvarAgente2NoBanco(d, score, prob, text);
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
@@ -4940,7 +4968,7 @@ Inicie com "ÍNDICE: XX/100" e "PREMIUM: XX%" nas primeiras linhas. Responda em 
             (e.message || "erro") +
             ")</span>";
           state.agent2Data = { ...d, score, prob };
-          document.getElementById("btn-relatorio-ag2").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag2");
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
           atualizarMetricasQualidade();
@@ -5012,7 +5040,7 @@ Dados encaminhados ao <strong>TopMeat Quality</strong>.`,
         document.getElementById("a2-score").textContent = "--";
         document.getElementById("a2-prob").textContent = "--%";
         state.agent2Data = null;
-        document.getElementById("btn-relatorio-ag2").style.display = "none";
+        desabilitarBotaoRelatorio("btn-relatorio-ag2", "Execute 'Prever Qualidade' para liberar o relatório individual");
         atualizarConsolidadoAgente3();
       }
 
@@ -5027,7 +5055,7 @@ Dados encaminhados ao <strong>TopMeat Quality</strong>.`,
         document.getElementById("a3-destino-card").style.display = "none";
         document.getElementById("a3-destino-content").innerHTML = "";
         state.agent3Result = null;
-        document.getElementById("btn-relatorio-ag3").style.display = "none";
+        desabilitarBotaoRelatorio("btn-relatorio-ag3", "Execute o Motor de Decisão para liberar o relatório completo");
       }
 
       // ========== AGENTE 03 ==========
@@ -5037,6 +5065,13 @@ Dados encaminhados ao <strong>TopMeat Quality</strong>.`,
         if (!box) return;
         const d1 = state.agent1Data,
           d2 = state.agent2Data;
+
+        if (!d1 || !d2) {
+          desabilitarBotaoRelatorio(
+            "btn-relatorio-ag3",
+            "Faltam dados de " + (!d1 ? "Agente 01" : "Agente 02") + " para o relatório completo",
+          );
+        }
 
         if (!d1 && !d2) {
           box.innerHTML =
@@ -5125,7 +5160,7 @@ Inicie com "DESTINAÇÃO: [destino]" e "BONIFICAÇÃO: R$ [valor]" nas primeiras
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           atualizarMetricasQualidade();
           state.agent3Result = { destino, bonif };
-          document.getElementById("btn-relatorio-ag3").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag3");
           registrarRelatorioAutomatico(state.agent1Data, state.agent2Data, destino);
           await salvarAgente3NoBanco(
             lote,
@@ -5161,7 +5196,7 @@ Inicie com "DESTINAÇÃO: [destino]" e "BONIFICAÇÃO: R$ [valor]" nas primeiras
             ")</span>";
           atualizarMetricasQualidade();
           state.agent3Result = { destino: resultado.destino, bonif: resultado.bonif };
-          document.getElementById("btn-relatorio-ag3").style.display = "";
+          habilitarBotaoRelatorio("btn-relatorio-ag3");
           registrarRelatorioAutomatico(state.agent1Data, state.agent2Data, resultado.destino);
         }
       }
