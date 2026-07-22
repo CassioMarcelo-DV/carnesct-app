@@ -2499,6 +2499,15 @@
                     ></div>
                   </div>
 
+                  <button
+                    class="btn-secondary"
+                    id="btn-relatorio-ag1"
+                    style="display: none; width: 100%; margin-bottom: 16px"
+                    onclick="abrirRelatorioAgente1()"
+                  >
+                    📋 Ver Relatório Individual
+                  </button>
+
                   <div class="ai-response" id="ag1-result">
                     <div class="ai-response-header">
                       <div class="ai-response-icon">🔬</div>
@@ -2782,6 +2791,15 @@
                     </div>
                   </div>
 
+                  <button
+                    class="btn-secondary"
+                    id="btn-relatorio-ag2"
+                    style="display: none; width: 100%; margin-bottom: 16px"
+                    onclick="abrirRelatorioAgente2()"
+                  >
+                    📋 Ver Relatório Individual
+                  </button>
+
                   <div class="ai-response" id="ag2-result">
                     <div class="ai-response-header">
                       <div class="ai-response-icon">🧬</div>
@@ -2953,6 +2971,15 @@
                     </div>
                     <div id="a3-destino-content"></div>
                   </div>
+
+                  <button
+                    class="btn-secondary"
+                    id="btn-relatorio-ag3"
+                    style="display: none; width: 100%; margin-bottom: 16px"
+                    onclick="abrirRelatorioAgente3()"
+                  >
+                    📋 Ver Relatório Completo
+                  </button>
 
                   <div class="ai-response" id="ag3-result">
                     <div class="ai-response-header">
@@ -3811,7 +3838,7 @@
     <div class="modal-overlay" id="modal-relatorio-ver" style="z-index:300">
       <div class="modal" style="max-width:720px;max-height:85vh;overflow-y:auto;">
         <button class="modal-close" onclick="closeModal('modal-relatorio-ver')">✕</button>
-        <h3>📋 Relatório de Análise</h3>
+        <h3 id="modal-relatorio-titulo">📋 Relatório de Análise</h3>
         <div id="modal-relatorio-conteudo" style="font-size:13px;line-height:1.7;margin-top:12px;"></div>
         <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end;flex-wrap:wrap;">
           <button class="btn-secondary" onclick="imprimirRelatorio()">🖨️ Imprimir / Salvar PDF</button>
@@ -3893,6 +3920,7 @@
         empresaId: null,
         agent1Data: null,
         agent2Data: null,
+        agent3Result: null,
         currentScreen: "dashboard",
         dashboardData: { avaliacoes: [] },
       };
@@ -4709,6 +4737,7 @@ Responda em português brasileiro, técnico e direto. Inicie com "SCORE: XX/100"
           animateScore(score);
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           state.agent1Data = { ...d, score };
+          document.getElementById("btn-relatorio-ag1").style.display = "";
           await salvarAgente1NoBanco(d, score, text);
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
@@ -4723,6 +4752,7 @@ Responda em português brasileiro, técnico e direto. Inicie com "SCORE: XX/100"
             (e.message || "erro") +
             ")</span>";
           state.agent1Data = { ...d, score };
+          document.getElementById("btn-relatorio-ag1").style.display = "";
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
         }
@@ -4799,6 +4829,7 @@ Carcaça classificada. Pontuação técnica: ${score}/100. Dados completos (biom
         const arc = document.getElementById("score-arc");
         if (arc) arc.style.strokeDasharray = "0 220";
         state.agent1Data = null;
+        document.getElementById("btn-relatorio-ag1").style.display = "none";
         atualizarConsolidadoAgente3();
       }
 
@@ -4893,6 +4924,7 @@ Inicie com "ÍNDICE: XX/100" e "PREMIUM: XX%" nas primeiras linhas. Responda em 
           document.getElementById("a2-prob").textContent = prob + "%";
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           state.agent2Data = { ...d, score, prob };
+          document.getElementById("btn-relatorio-ag2").style.display = "";
           await salvarAgente2NoBanco(d, score, prob, text);
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
@@ -4908,6 +4940,7 @@ Inicie com "ÍNDICE: XX/100" e "PREMIUM: XX%" nas primeiras linhas. Responda em 
             (e.message || "erro") +
             ")</span>";
           state.agent2Data = { ...d, score, prob };
+          document.getElementById("btn-relatorio-ag2").style.display = "";
           atualizarConsolidadoAgente3();
           atualizarMetricasAnimal();
           atualizarMetricasQualidade();
@@ -4979,6 +5012,7 @@ Dados encaminhados ao <strong>TopMeat Quality</strong>.`,
         document.getElementById("a2-score").textContent = "--";
         document.getElementById("a2-prob").textContent = "--%";
         state.agent2Data = null;
+        document.getElementById("btn-relatorio-ag2").style.display = "none";
         atualizarConsolidadoAgente3();
       }
 
@@ -4992,6 +5026,8 @@ Dados encaminhados ao <strong>TopMeat Quality</strong>.`,
         textEl.style.color = "var(--cinza-texto)";
         document.getElementById("a3-destino-card").style.display = "none";
         document.getElementById("a3-destino-content").innerHTML = "";
+        state.agent3Result = null;
+        document.getElementById("btn-relatorio-ag3").style.display = "none";
       }
 
       // ========== AGENTE 03 ==========
@@ -5088,6 +5124,8 @@ Inicie com "DESTINAÇÃO: [destino]" e "BONIFICAÇÃO: R$ [valor]" nas primeiras
           mostrarDestino({ destino, bonif });
           textEl.innerHTML = text.replace(/\n/g, "<br>");
           atualizarMetricasQualidade();
+          state.agent3Result = { destino, bonif };
+          document.getElementById("btn-relatorio-ag3").style.display = "";
           registrarRelatorioAutomatico(state.agent1Data, state.agent2Data, destino);
           await salvarAgente3NoBanco(
             lote,
@@ -5122,6 +5160,8 @@ Inicie com "DESTINAÇÃO: [destino]" e "BONIFICAÇÃO: R$ [valor]" nas primeiras
             (e.message || "erro") +
             ")</span>";
           atualizarMetricasQualidade();
+          state.agent3Result = { destino: resultado.destino, bonif: resultado.bonif };
+          document.getElementById("btn-relatorio-ag3").style.display = "";
           registrarRelatorioAutomatico(state.agent1Data, state.agent2Data, resultado.destino);
         }
       }
@@ -5908,6 +5948,117 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
         }
       }
 
+      function blocoAgente1Html(d1) {
+        if (!d1 || d1.score === undefined) return "";
+        return `
+          <h5 style="margin:0 0 8px;font-size:13px;">📊 TopMeat Metrics (Agente 01)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
+              <div><strong>Score:</strong> ${d1.score}/100</div>
+              <div><strong>Peso vivo:</strong> ${d1.peso||"—"} kg</div>
+              <div><strong>PCQ:</strong> ${d1.pcq||"—"} kg</div>
+              <div><strong>AOL:</strong> ${d1.aol||"—"} cm²</div>
+              <div><strong>EGS:</strong> ${d1.egs||"—"} mm</div>
+              <div><strong>pH final:</strong> ${d1.ph2||"—"}</div>
+              <div><strong>Rend. quente:</strong> ${d1.rcq||"—"}%</div>
+              <div><strong>Rend. fria:</strong> ${d1.rcf||"—"}%</div>
+              <div><strong>Perda resfr.:</strong> ${d1.perdares||"—"}%</div>
+            </div>
+          </div>`;
+      }
+
+      function blocoAgente2Html(d2) {
+        if (!d2 || d2.score === undefined) return "";
+        return `
+          <h5 style="margin:0 0 8px;font-size:13px;">🔬 TopMeat Carcass (Agente 02)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
+              <div><strong>Índice:</strong> ${d2.score}/100</div>
+              <div><strong>% Premium:</strong> ${d2.prob||"—"}%</div>
+              <div><strong>Maciez (FC):</strong> ${d2.fc||"—"} N</div>
+              <div><strong>CRA:</strong> ${d2.cra||"—"}%</div>
+              <div><strong>PPC:</strong> ${d2.ppc||"—"}%</div>
+              <div><strong>Cor L*:</strong> ${d2.L||"—"}</div>
+              <div><strong>Proteína:</strong> ${d2.prot||"—"}%</div>
+              <div><strong>Lipídios:</strong> ${d2.lip||"—"}%</div>
+            </div>
+          </div>`;
+      }
+
+      function abrirRelatorioAgente1() {
+        const d1 = state.agent1Data;
+        if (!d1) {
+          showToast("Execute o Agente 01 (Analisar com IA) antes de gerar o relatório.");
+          return;
+        }
+        const espEmoji = { Ovino: "🐑", Caprino: "🐐", Bovino: "🐄" };
+        const dataStr = new Date().toLocaleDateString("pt-BR");
+        const html = `
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+              <div><strong>Animal:</strong> ${d1.num || "—"}</div>
+              <div><strong>Espécie:</strong> ${espEmoji[d1.especie]||"🐾"} ${d1.especie || "—"}</div>
+              <div><strong>Avaliador:</strong> ${d1.avaliador || "—"}</div>
+              <div><strong>Data:</strong> ${dataStr}</div>
+            </div>
+          </div>
+          ${blocoAgente1Html(d1)}`;
+        document.getElementById("modal-relatorio-titulo").textContent = "📋 Relatório Individual — TopMeat Metrics";
+        document.getElementById("modal-relatorio-conteudo").innerHTML = html;
+        openModal("modal-relatorio-ver");
+      }
+
+      function abrirRelatorioAgente2() {
+        const d2 = state.agent2Data;
+        if (!d2) {
+          showToast("Execute o Agente 02 (Prever Qualidade) antes de gerar o relatório.");
+          return;
+        }
+        const d1 = state.agent1Data;
+        const dataStr = new Date().toLocaleDateString("pt-BR");
+        const html = `
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+              <div><strong>Animal:</strong> ${d1?.num || "—"}</div>
+              <div><strong>Data:</strong> ${dataStr}</div>
+            </div>
+          </div>
+          ${blocoAgente2Html(d2)}`;
+        document.getElementById("modal-relatorio-titulo").textContent = "📋 Relatório Individual — TopMeat Carcass";
+        document.getElementById("modal-relatorio-conteudo").innerHTML = html;
+        openModal("modal-relatorio-ver");
+      }
+
+      function abrirRelatorioAgente3() {
+        const d1 = state.agent1Data;
+        const d2 = state.agent2Data;
+        if (!d1 || !d2) {
+          showToast("Execute o Agente 01 e o Agente 02 antes de gerar o relatório completo do Agente 03.");
+          return;
+        }
+        const espEmoji = { Ovino: "🐑", Caprino: "🐐", Bovino: "🐄" };
+        const dataStr = new Date().toLocaleDateString("pt-BR");
+        const destino = state.agent3Result?.destino || "—";
+        const iaTexto = document.getElementById("ag3-response-text")?.innerText || "";
+        const html = `
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;">
+              <div><strong>Animal:</strong> ${d1.num || "—"}</div>
+              <div><strong>Espécie:</strong> ${espEmoji[d1.especie]||"🐾"} ${d1.especie || "—"}</div>
+              <div><strong>Data:</strong> ${dataStr}</div>
+              <div><strong>Destinação:</strong> ${destino}</div>
+            </div>
+          </div>
+          ${blocoAgente1Html(d1)}
+          ${blocoAgente2Html(d2)}
+          ${iaTexto ? `
+          <h5 style="margin:0 0 8px;font-size:13px;">🤖 Análise TopMeat Quality (IA)</h5>
+          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;font-size:12px;white-space:pre-wrap;max-height:260px;overflow-y:auto;">${iaTexto}</div>` : ""}`;
+        document.getElementById("modal-relatorio-titulo").textContent = "📋 Relatório Completo — TopMeat Quality";
+        document.getElementById("modal-relatorio-conteudo").innerHTML = html;
+        openModal("modal-relatorio-ver");
+      }
+
       function verRelatorio(analiseId) {
         const av = state.dashboardData.avaliacoes.find(a => a.id === analiseId);
         if (!av) { showToast("Análise não encontrada."); return; }
@@ -5925,38 +6076,12 @@ Lote ${lote} processado com sucesso. ${pctV}% de aproveitamento premium. Relató
               <div><strong>Score:</strong> ${av.score}/100</div>
             </div>
           </div>
-          ${d1.score !== undefined ? `
-          <h5 style="margin:0 0 8px;font-size:13px;">📊 TopMeat Metrics (Agente 01)</h5>
-          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
-              <div><strong>Score:</strong> ${d1.score}/100</div>
-              <div><strong>Peso vivo:</strong> ${d1.peso||"—"} kg</div>
-              <div><strong>PCQ:</strong> ${d1.pcq||"—"} kg</div>
-              <div><strong>AOL:</strong> ${d1.aol||"—"} cm²</div>
-              <div><strong>EGS:</strong> ${d1.egs||"—"} mm</div>
-              <div><strong>pH final:</strong> ${d1.ph2||"—"}</div>
-              <div><strong>Rend. quente:</strong> ${d1.rcq||"—"}%</div>
-              <div><strong>Rend. fria:</strong> ${d1.rcf||"—"}%</div>
-              <div><strong>Perda resfr.:</strong> ${d1.perdares||"—"}%</div>
-            </div>
-          </div>` : ""}
-          ${d2.score !== undefined ? `
-          <h5 style="margin:0 0 8px;font-size:13px;">🔬 TopMeat Carcass (Agente 02)</h5>
-          <div style="background:var(--fundo-card);border-radius:10px;padding:14px;margin-bottom:14px;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;font-size:12px;">
-              <div><strong>Índice:</strong> ${d2.score}/100</div>
-              <div><strong>% Premium:</strong> ${d2.prob||"—"}%</div>
-              <div><strong>Maciez (FC):</strong> ${d2.fc||"—"} N</div>
-              <div><strong>CRA:</strong> ${d2.cra||"—"}%</div>
-              <div><strong>PPC:</strong> ${d2.ppc||"—"}%</div>
-              <div><strong>Cor L*:</strong> ${d2.L||"—"}</div>
-              <div><strong>Proteína:</strong> ${d2.prot||"—"}%</div>
-              <div><strong>Lipídios:</strong> ${d2.lip||"—"}%</div>
-            </div>
-          </div>` : ""}
+          ${blocoAgente1Html(d1)}
+          ${blocoAgente2Html(d2)}
           ${av.iaTexto ? `
           <h5 style="margin:0 0 8px;font-size:13px;">🤖 Análise TopMeat Quality (IA)</h5>
           <div style="background:var(--fundo-card);border-radius:10px;padding:14px;font-size:12px;white-space:pre-wrap;max-height:260px;overflow-y:auto;">${av.iaTexto}</div>` : ""}`;
+        document.getElementById("modal-relatorio-titulo").textContent = "📋 Relatório de Análise";
         document.getElementById("modal-relatorio-conteudo").innerHTML = html;
         openModal("modal-relatorio-ver");
       }
